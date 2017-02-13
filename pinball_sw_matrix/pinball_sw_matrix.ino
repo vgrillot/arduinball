@@ -12,7 +12,7 @@ byte colPins[COLS] = {22, 24, 26, 28, 30}; // out
 
 
 SwMatrix *matrix = 0;
-HwRules *rules = 0;
+HwRules *rules = 0; 
 
 void setup() {
   // put your setup code here, to run once:
