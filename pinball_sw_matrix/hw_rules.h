@@ -18,13 +18,14 @@ const byte MAX_HW_RULES = 20;
  * Hardware rules classes
  */
 
-
 class HwRules
 {
   private:
     HwRule rules[MAX_HW_RULES];
     SwMatrix *matrix;
     unsigned int time;
+
+    boolean isSwitchActive(byte swId);
 
   public:
     HwRules();
@@ -37,7 +38,6 @@ class HwRules
     void stopAll();
     void stopRule(HwRule *r);
     void activeRule(HwRule *r);
-    boolean isSwitchActive(byte swId);
 };
 
 #endif

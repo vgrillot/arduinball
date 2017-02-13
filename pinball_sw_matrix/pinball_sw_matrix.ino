@@ -18,12 +18,13 @@ void setup() {
   // put your setup code here, to run once:
 
 
-
+/*
   pinMode(52, INPUT_PULLUP);
   pinMode(53, OUTPUT);
   digitalWrite(53, HIGH);
   pinMode(51, OUTPUT);
   digitalWrite(51, LOW);
+*/
 
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -38,9 +39,13 @@ void setup() {
   updated();
   //setup_switch_matrix();
 
+  // main object creation
   matrix = new SwMatrix(1, ROWS, COLS, rowPins, colPins);
+  matrix->init();
   rules = new HwRules();
-  
+  rules->setSwMatrix(matrix);
+  // add some hardcoded rules for test purposes
+  rules->addHwRule(hw_rule_pulse_on_hit_rule, 01, 53, 0, 10); // ex of slingshot
     
 }
 
@@ -66,82 +71,18 @@ void refresh_led() {
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  byte v;
-  int i;
+  unsigned long t;
+  t = millis();
+
   //read_switchs();
   if (matrix->read())
     updated();
+  //run rules
+  rules->runAll(t);
 
   refresh_led();  
-  delay(10);
-
 }
 
-
-
-
-byte switches_id[ROWS][COLS];
-byte switches_state[ROWS][COLS];
-byte switches_prev_state[ROWS][COLS];
-
-
-///////////////// switchs matrix
-
-void setup_switch_matrix() {
-  byte r, c, v;
-  for (c = 0; c < COLS; c++)
-    for (r = 0; r < ROWS; r++)
-    {
-      v = byte(1 + c + r * ROWS);
-      //Serial.println(String(v));
-      switches_id[r][c] = v;
-      switches_state[r][c] = 0;
-      switches_prev_state[r][c] = 0;
-    }
-
-
-  // in
-  for (r = 0; r < ROWS; r++)
-    pinMode(rowPins[r], INPUT_PULLUP);
-
-  // out
-  for (c = 0; c < COLS; c++) {
-    pinMode(colPins[c], OUTPUT);
-    digitalWrite(colPins[c], HIGH);
-  }
-}
-
-void read_switchs() {
-  String s;
-
-  for (byte c = 0; c < COLS; c++) {
-    // enable the column
-    digitalWrite(colPins[c], LOW);
-    for (byte r = 0; r < ROWS; r++) {
-      // save previous state
-      switches_prev_state[r][c] = switches_state[r][c];
-      // read current state
-      switches_state[r][c] = byte(digitalRead(rowPins[r]));
-      if (switches_prev_state[r][c] != switches_state[r][c]) {
-        //Serial.write(sprintf("%d:%d", switches_id[r][c], switches_state[r][c]));
-        //s = switches_id[r][c] + String(":") + c + String("/") + r + String(":") + switches_state[r][c] + String(",");
-        s = String("S") + switches_id[r][c] + String(":") + switches_state[r][c];
-        Serial.println(s);
-        updated(); // signify a change / activity to the led
-      }
-    }
-    // disable the column
-    digitalWrite(colPins[c], HIGH);
-  }
-  //Serial.println(".");
-}
-
-
-/*
-  mode: INPUT, OUTPUT, or INPUT_PULLUP
-
-*/
 
 
 
