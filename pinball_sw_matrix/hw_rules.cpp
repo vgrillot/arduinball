@@ -11,18 +11,16 @@
 #include "hw_rules.h"
 #include "hw_rule.h"
 
+
 /*
  * constructor HwRules()
  * !!170204:VG:Creation
  */
 HwRules::HwRules() {
-
   // Clear array
   for (byte i=0; i<MAX_HW_RULES; i++) {
     this->rules[i].type = hw_rule_ndef;
   }
-  
-  //ok : this->rules[0] = &HwRule(hw_rule_pulse_on_hit_rule);  
 }
 
 
@@ -42,9 +40,6 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
       r->coilPin = coilPin;
       r->disableSwitchId = disableSwitchId;
 	  r->state = hw_rule_state_enabled;
-
-      r->active = false;
-      r->enable = true;
       r->timeout = 0;
       r->duration = duration;
       return;
@@ -72,6 +67,7 @@ void HwRules::runAll(unsigned int time) {
     }    
   }  
 }
+
 
 /*
  * RunRule() 
@@ -102,7 +98,7 @@ void HwRules::runRule(HwRule *r) {
 					
 						// time out:
 						case hw_rule_pulse_on_hit_rule:
-            case hw_rule_pulse:
+						case hw_rule_pulse:
 							r->state = hw_rule_state_start_duration;
 							break;
 							
@@ -152,13 +148,9 @@ void HwRules::runRule(HwRule *r) {
 					r->timeout = 0;
 					break;
 
-
-				
 			} //state?
-
 		} //!disable
 	} //!ndef
-  
 }
 
 
@@ -171,37 +163,10 @@ void HwRules::stopAll() {
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
     r = &(this->rules[i]);
-    if (r->type != hw_rule_ndef) {
-      this->stopRule(r);
+    if ((r->type != hw_rule_ndef) && (r->state != hw_rule_state_disabled) {
+		r->state = hw_rule_state_release;
     }    
   }  
-}
-
-
-/*
- * stopRule()
- * Stop the activated coil
- * !!170205:VG:Creation
- */
-void HwRules::stopRule(HwRule *r) { 
-  // if the rule has been activated, 
-  // then stop the activated coil
-  if (r->active) {
-    //TODO:
-    digitalWrite(r->coilPin, LOW);    
-    r->active = false;
-    r->timeout = 0;  
-  }    
-}
-
-/*
- * activeRule()
- * Active the coil and start timers
- */
-void HwRules::activeRule(HwRule *r){
-  r->active = true;
-//  r->activationTime = time; //TODO:global time var?
-  digitalWrite(r->coilPin, HIGH);
 }
 
 

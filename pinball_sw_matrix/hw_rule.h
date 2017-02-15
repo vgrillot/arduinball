@@ -26,6 +26,10 @@ enum HwRuleType: byte {
   hw_rule_pulse = 6
 };
 
+
+/*
+ * Hardware rule state machine
+ */
 enum HwRuleState: byte {
   hw_rule_state_disabled = 0,		// rule can't be activated
   hw_rule_state_enabled = 1,         // rule is waiting for a trigger
@@ -36,20 +40,18 @@ enum HwRuleState: byte {
   hw_rule_state_release = 6,  			// coil set to OFF
 };
 
+
+/*
+ * HwRule
+ */
 typedef struct {
     // type : define the type of the rule
     HwRuleType type;
 	
 	HwRuleState state;
-    
-    // is the rule enabled, if not, do nothing on Run()
-    boolean enable;    
-    
-    // active : true if some coild is activated
-    boolean active;
-    
+            
     // timeout : when the rule must be released
-    unsigned long timeout ;
+    unsigned long timeout;
     
     // duration: how long the coil must be activated
     unsigned long duration;
@@ -61,7 +63,7 @@ typedef struct {
     int coilPin;  
     
     // disableSwitchId: used by pulse_on_hit_and_enable_and_release_and_disable_rule
-    int disableSwitchId ;
+    int disableSwitchId;
 
     
 } HwRule;
