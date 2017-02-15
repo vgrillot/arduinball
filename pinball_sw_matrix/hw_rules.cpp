@@ -104,6 +104,7 @@ void HwRules::runRule(HwRule *r) {
 							
 						// wait for release:
 						case hw_rule_pulse_on_hit_and_enable_and_release_rule: 
+						case hw_rule_pulse_on_hit_and_enable_and_release_and_disable_rule:
 							r->state = hw_rule_state_wait_release;
 							break;
 							
