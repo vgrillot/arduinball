@@ -23,7 +23,7 @@ class HwRules
   private:
     HwRule rules[MAX_HW_RULES];
     SwMatrix *matrix;
-    unsigned int time;
+    unsigned int _time;
 
     boolean isSwitchActive(byte swId);
 

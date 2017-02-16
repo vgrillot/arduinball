@@ -1,3 +1,9 @@
+/*
+ * board : arduino mega ADK
+ * programmer : tiny usb isp
+ * 
+ */
+
 #include "hw_rules.h"
 #include "sw_matrix.h"
 
@@ -29,23 +35,22 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
 
   Serial.begin(9600);
-/*  
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
-*/  
   Serial.println("init done!");
 
   updated();
   //setup_switch_matrix();
 
   // main object creation
-  matrix = new SwMatrix(1, ROWS, COLS, rowPins, colPins);
-  matrix->init();
+  matrix = new SwMatrix(1, ROWS, COLS, &rowPins[0], &colPins[0]);
   rules = new HwRules();
   rules->setSwMatrix(matrix);
   // add some hardcoded rules for test purposes
   rules->addHwRule(hw_rule_pulse_on_hit_rule, 01, 53, 0, 10); // ex of slingshot
+
+  Serial.println("rules done!");
     
 }
 

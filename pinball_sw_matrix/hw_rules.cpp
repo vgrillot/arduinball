@@ -21,8 +21,6 @@ HwRules::HwRules() {
   for (byte i=0; i<MAX_HW_RULES; i++) {
     this->rules[i].type = hw_rule_ndef;
   }
-  
-  //ok : this->rules[0] = &HwRule(hw_rule_pulse_on_hit_rule);  
 }
 
 
@@ -32,6 +30,9 @@ HwRules::HwRules() {
  * !!170204:VG:Creation
  */
 void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration) {
+
+  Serial.println("HwRules::addHwRule()");
+  
   // search for an empty rule slot
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
@@ -41,7 +42,7 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
       r->enableSwitchId = enableSwitchId;
       r->coilPin = coilPin;
       r->disableSwitchId = disableSwitchId;
-	  r->state = hw_rule_state_enabled;
+	    r->state = hw_rule_state_enabled;
 
       r->active = false;
       r->enable = true;
@@ -62,7 +63,7 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
  */
 void HwRules::runAll(unsigned int time) {
   // save the current time
-  this->time = time;
+  this->_time = time;
   // parse all rules
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
@@ -135,12 +136,12 @@ void HwRules::runRule(HwRule *r) {
 					break;
 					
 				case hw_rule_state_start_duration:
-					r->timeout = time + r->duration;
+					r->timeout = this->_time + r->duration;
 					r->state = hw_rule_state_wait_duration;
 					break;
 				
 				case hw_rule_state_wait_duration:
-					if (time > r->timeout) {
+					if (this->_time > r->timeout) {
 						r->state = hw_rule_state_release;
 					}					
 					break;

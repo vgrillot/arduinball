@@ -6,6 +6,7 @@
  */
  
 #include "sw_matrix.h"
+#include "hw_rules.h"
 #include <Arduino.h>
 
 /*
@@ -15,18 +16,21 @@
  * !!170205:VG:Creation
  * 
  */
-SwMatrix::SwMatrix(byte Id, byte RowCount, byte ColCount, byte *Rows, byte *Cols) {
+SwMatrix::SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols) {
+
+  Serial.println("SwMatrix::SwMatrix()");
 
   // memory allocation
   this->rowCount = rowCount;
   this->colCount = colCount;
 
   this->rowPins  = (byte *) malloc(rowCount * sizeof(byte));
+  memcpy(this->rowPins, rows, rowCount * sizeof(byte));
   this->colPins  = (byte *) malloc(colCount * sizeof(byte));
+  memcpy(this->colPins, cols,  colCount * sizeof(byte));
   this->sw_id    = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->sw_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->sw_prev_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
-
   this->init();
 }
 
@@ -44,13 +48,15 @@ byte SwMatrix::matrixToId(byte col, byte row) {
  * !!170205:VG:Creation
  */
 void SwMatrix::init() {
+
+  Serial.println("SwMatrix::init(" + String(this->colCount) + "," + String(this->rowCount) +")");
   byte r, c, v;
   for (c = 0; c < this->colCount; c++)
     for (r = 0; r < this->rowCount; r++)
     {
       //v = byte(1 + c + r * this->rowCount);
       v = this->matrixToId(c, r);
-      //Serial.println(String(v));
+      Serial.println(String(v));
       this->sw_id[v] = v;
       this->sw_state[v] = 0;
       this->sw_prev_state[v] = 0;

@@ -42,7 +42,7 @@ class SwMatrix
   public:
     byte *sw_state = 0; //[ROWS][COLS];
 
-    SwMatrix(byte Id, byte RowCount, byte ColCount, byte *Rows, byte *Cols);
+    SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols);
     void init();
     byte matrixToId(byte col, byte row);
     boolean read();
