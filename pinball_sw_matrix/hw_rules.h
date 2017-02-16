@@ -30,14 +30,14 @@ class HwRules
   public:
     HwRules();
     void setSwMatrix(SwMatrix *matrix);
+
     void addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration);
     void addPulse(int coilPin, int duration);
     void addEnable();
+
     void runAll(unsigned int time);
     void runRule(HwRule *r);
     void stopAll();
-    void stopRule(HwRule *r);
-    void activeRule(HwRule *r);
 };
 
 #endif
