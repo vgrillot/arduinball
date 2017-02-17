@@ -1,3 +1,4 @@
+
 /*
  * sw_matrix
  * 
@@ -99,8 +100,6 @@ boolean SwMatrix::read() {
       // read current state
       this->sw_state[id] = byte(digitalRead(this->rowPins[r]));
       if (this->sw_prev_state[id] != this->sw_state[id]) {
-        //Serial.write(sprintf("%d:%d", switches_id[r][c], switches_state[r][c]));
-        //s = switches_id[r][c] + String(":") + c + String("/") + r + String(":") + switches_state[r][c] + String(",");
         s = String("S") + this->sw_id[id] + String(":") + this->sw_state[id];
         Serial.println(s);
         updated = true; // signify a change

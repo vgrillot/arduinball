@@ -38,6 +38,7 @@ enum HwRuleState: byte {
   hw_rule_state_start_duration = 4, // rule is still active, start the timeout
   hw_rule_state_wait_duration = 5,  // rule is still active, waiting for the timeout
   hw_rule_state_release = 6,  			// coil set to OFF
+  hw_rule_state_wait_final_release = 7 // ensure sw is deactivated
 };
 
 
@@ -45,10 +46,14 @@ enum HwRuleState: byte {
  * HwRule
  */
 typedef struct {
-    // type : define the type of the rule
+    // id 
+    byte id;
+    
+    // type : define the type of the rule    
     HwRuleType type;
-	
-	HwRuleState state;
+
+    // state : state machine of the rule
+	  HwRuleState state;
             
     // timeout : when the rule must be released
     unsigned long timeout;

@@ -1,4 +1,4 @@
-/*
+ /*
  * board : arduino mega ADK
  * programmer : tiny usb isp
  * 
@@ -48,7 +48,9 @@ void setup() {
   rules = new HwRules();
   rules->setSwMatrix(matrix);
   // add some hardcoded rules for test purposes
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 01, 53, 0, 10); // ex of slingshot
+  rules->addHwRule(hw_rule_pulse_on_hit_rule, 1, 53, 0, 10); // ex of slingshot
+  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 8, 52, 0, 10); // ex of flip
+  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 8, 52, 0, 10); // ex of flip
 
   Serial.println("rules done!");
     

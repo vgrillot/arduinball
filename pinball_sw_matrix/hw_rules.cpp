@@ -38,6 +38,7 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
   for (byte i=0; i<MAX_HW_RULES; i++) {
     r = &(this->rules[i]);
     if (r->type == hw_rule_ndef) {
+      r->id = i;
       r->type = type;
       r->enableSwitchId = enableSwitchId;
       r->coilPin = coilPin;
@@ -79,15 +80,18 @@ void HwRules::runAll(unsigned int time) {
  * !!170214:VG:Manage a state machine
  */
 void HwRules::runRule(HwRule *r) {
+	byte old_state;
 	boolean switch_active;
+	
 	if(r->type != hw_rule_ndef) {	  
+		old_state = r->state;
 		if (r->state != hw_rule_state_disabled) {
 		
 			// read the main switch state
 			switch_active = this->isSwitchActive(r->enableSwitchId);
 
 			switch(r->state) {
-				case hw_rule_state_enabled:
+				case hw_rule_state_enabled: //1
 					if (switch_active) {
 						// enable the coil
 						digitalWrite(r->coilPin, HIGH);
@@ -95,7 +99,7 @@ void HwRules::runRule(HwRule *r) {
 					}
 					break;
 					
-				case hw_rule_state_activated:
+				case hw_rule_state_activated: //2
 					// depending on the rule, need to wait a duration or a release
 					switch(r->type) { 
 					
@@ -128,32 +132,44 @@ void HwRules::runRule(HwRule *r) {
 					}
 					break;
 					
-				case hw_rule_state_wait_release:	
+				case hw_rule_state_wait_release: //3
 					if (!switch_active) {
 						r->state = hw_rule_state_release;
 					}
 					break;
 					
-				case hw_rule_state_start_duration:
+				case hw_rule_state_start_duration: //4
 					r->timeout = this->_time + r->duration;
 					r->state = hw_rule_state_wait_duration;
 					break;
 				
-				case hw_rule_state_wait_duration:
+				case hw_rule_state_wait_duration: //5
 					if (this->_time > r->timeout) {
 						r->state = hw_rule_state_release;
 					}					
 					break;
 					
-				case hw_rule_state_release :
+				case hw_rule_state_release : //6
 					// disable the coil
 					digitalWrite(r->coilPin, LOW);
-					r->state = hw_rule_state_enabled;
+					r->state = hw_rule_state_wait_final_release; //hw_rule_state_enabled;
 					r->timeout = 0;
 					break;
 
+        case hw_rule_state_wait_final_release: //7
+          if (!switch_active) {
+            r->state = hw_rule_state_enabled;
+          }
+          break;
+        
+
 			} //state?
 		} //!disable
+		
+		if (r->state != old_state) {
+			Serial.println(String(this->_time) + ":" + String(r->id) + ":" + String(old_state) + "->" +  String(r->state));
+		}
+		
 	} //!ndef
 }
 
@@ -167,8 +183,8 @@ void HwRules::stopAll() {
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
     r = &(this->rules[i]);
-    if ((r->type != hw_rule_ndef) && (r->state != hw_rule_state_disabled) {
-		r->state = hw_rule_state_release;
+    if ((r->type != hw_rule_ndef) && (r->state != hw_rule_state_disabled)) {
+		  r->state = hw_rule_state_release;
     }    
   }  
 }
@@ -179,9 +195,10 @@ void HwRules::stopAll() {
  * look into the switch matrix
  * assume for now there is only one switch matrix
  * !!170205:VG:Creation
+ * !!170217:VG:Matrix level has been reversed, sw is activated on LOW level
  */
 boolean HwRules::isSwitchActive(byte swId) {
-  return this->matrix->sw_state[swId] > 0;
+  return this->matrix->sw_state[swId] == 0;
 }
 
 
