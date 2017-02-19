@@ -37,9 +37,11 @@ SwMatrix::SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols
 
 /*
  * 
+ * !!170218:VG:inverse row/col for numering
  */
 byte SwMatrix::matrixToId(byte col, byte row) {
-  return row + col * this->rowCount;
+//  return row + col * this->rowCount;
+  return col + row * this->colCount;
 }
 
 /*
@@ -57,8 +59,8 @@ void SwMatrix::init() {
     {
       //v = byte(1 + c + r * this->rowCount);
       v = this->matrixToId(c, r);
-      Serial.println(String(v));
-      this->sw_id[v] = v;
+      //Serial.println(String(v));
+      this->sw_id[v] = v + 1;
       this->sw_state[v] = 0;
       this->sw_prev_state[v] = 0;
     }
@@ -100,7 +102,9 @@ boolean SwMatrix::read() {
       // read current state
       this->sw_state[id] = byte(digitalRead(this->rowPins[r]));
       if (this->sw_prev_state[id] != this->sw_state[id]) {
-        s = String("S") + this->sw_id[id] + String(":") + this->sw_state[id];
+        s = String("S") + this->sw_id[id] 
+            + ":ST" + String(c) + ",RT" + String(r)  
+            + ":" + this->sw_state[id];
         Serial.println(s);
         updated = true; // signify a change
       }

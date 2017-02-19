@@ -28,11 +28,9 @@ HwRules::HwRules() {
  * addRule
  * create dynamically a rule to manage 
  * !!170204:VG:Creation
+ * !!170219:VG:set pin to output and low by default
  */
 void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration) {
-
-  Serial.println("HwRules::addHwRule()");
-  
   // search for an empty rule slot
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
@@ -43,14 +41,22 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
       r->enableSwitchId = enableSwitchId;
       r->coilPin = coilPin;
       r->disableSwitchId = disableSwitchId;
-	  r->state = hw_rule_state_enabled;
+	    r->state = hw_rule_state_enabled;
       r->timeout = 0;
       r->duration = duration;
+      pinMode(r->coilPin, OUTPUT);
+      digitalWrite(r->coilPin, LOW);
+
+      Serial.println("HwRules::addHwRule(" + String(r->id) + "," + 
+                                              String(r->enableSwitchId) + "," + 
+                                              String(r->coilPin) +")");
+      
       return;
     }    
   }
   // Empty slot not found !
   //TODO: raise error, no more slot for new rules...  
+  Serial.println("NO MORE SLOT FOR RULE !!");
 }
 
 
@@ -112,12 +118,13 @@ void HwRules::runRule(HwRule *r) {
 						// wait for release:
 						case hw_rule_pulse_on_hit_and_enable_and_release_rule: 
 						case hw_rule_pulse_on_hit_and_enable_and_release_and_disable_rule:
-							r->state = hw_rule_state_wait_release;
+							r->state = hw_rule_state_wait_release; //TODO:rule to re-check
 							break;
 							
 						// instant release:
 						case hw_rule_pulse_on_hit_and_release_rule:
-							r->state = hw_rule_state_release;
+              r->state = hw_rule_state_wait_release;
+//							r->state = hw_rule_state_release;
 							break;
 							
 						// none, stay active until further command:
@@ -196,9 +203,10 @@ void HwRules::stopAll() {
  * assume for now there is only one switch matrix
  * !!170205:VG:Creation
  * !!170217:VG:Matrix level has been reversed, sw is activated on LOW level
+ * !!170219:VG:FIX:swId is a visual ID, not index over array, then -1
  */
 boolean HwRules::isSwitchActive(byte swId) {
-  return this->matrix->sw_state[swId] == 0;
+  return this->matrix->sw_state[swId - 1] == 0;
 }
 
 
