@@ -123,7 +123,7 @@ void HwRules::runRule(HwRule *r) {
 							
 						// instant release:
 						case hw_rule_pulse_on_hit_and_release_rule:
-              r->state = hw_rule_state_wait_release;
+							r->state = hw_rule_state_wait_release;
 //							r->state = hw_rule_state_release;
 							break;
 							

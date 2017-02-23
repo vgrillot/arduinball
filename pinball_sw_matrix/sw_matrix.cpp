@@ -65,11 +65,9 @@ void SwMatrix::init() {
       this->sw_prev_state[v] = 0;
     }
 
-
   // ininialize input
   for (r = 0; r < this->rowCount; r++) 
     pinMode(rowPins[r], INPUT_PULLUP);
-  
 
   // initialize output
   for (c = 0; c < this->colCount; c++) {
