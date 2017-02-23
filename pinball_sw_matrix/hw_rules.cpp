@@ -41,7 +41,7 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
       r->enableSwitchId = enableSwitchId;
       r->coilPin = coilPin;
       r->disableSwitchId = disableSwitchId;
-	    r->state = hw_rule_state_enabled;
+	  r->state = hw_rule_state_enabled;
       r->timeout = 0;
       r->duration = duration;
       pinMode(r->coilPin, OUTPUT);
@@ -61,6 +61,33 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
 
 
 /*
+ * addInput()
+ * register an input "device"
+ * !!170223:VG:Creation
+ */
+void HwRules::addInput(SwInput *input) {
+	this->inputs[this->inputCount] = input;
+	this->inputCount++;
+	//TODO:manage max
+}
+
+
+/*
+ * readAll()
+ * Loop over all inputs and read them
+ * !!170223:VG:Creation
+ */
+void HwRules::readAll() {
+	SwCustom *inp;
+	for (byte i = 0; i < this->inputCount; i++)
+	{
+		inp = &(this->__inputs[i]);
+		inp->read();
+	}
+}	
+
+
+/*
  * RunAll()
  * Loop over all the rules and run them
  * !!170205:VG:Creation
@@ -68,10 +95,14 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
 void HwRules::runAll(unsigned int time) {
   // save the current time
   this->_time = time;
+  
+  // real all switches
+  this->readAll();
+  
   // parse all rules
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
-    r = &(this->rules[i]);
+    r = &(this->__rules[i]);
     if (r->type != hw_rule_ndef) {
       this->runRule(r);
     }    
@@ -123,7 +154,7 @@ void HwRules::runRule(HwRule *r) {
 							
 						// instant release:
 						case hw_rule_pulse_on_hit_and_release_rule:
-              r->state = hw_rule_state_wait_release;
+							r->state = hw_rule_state_wait_release;
 //							r->state = hw_rule_state_release;
 							break;
 							

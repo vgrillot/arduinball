@@ -22,16 +22,19 @@ SwMatrix::SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols
   Serial.println("SwMatrix::SwMatrix()");
 
   // memory allocation
-  this->rowCount = rowCount;
-  this->colCount = colCount;
+  this->__rowCount = rowCount;
+  this->__colCount = colCount;
 
-  this->rowPins  = (byte *) malloc(rowCount * sizeof(byte));
-  memcpy(this->rowPins, rows, rowCount * sizeof(byte));
-  this->colPins  = (byte *) malloc(colCount * sizeof(byte));
-  memcpy(this->colPins, cols,  colCount * sizeof(byte));
+  this->__rowPins  = (byte *) malloc(rowCount * sizeof(byte));
+  memcpy(this->__rowPins, rows, rowCount * sizeof(byte));
+
+  this->__colPins  = (byte *) malloc(colCount * sizeof(byte));
+  memcpy(this->__colPins, cols,  colCount * sizeof(byte));
+
   this->sw_id    = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->sw_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->sw_prev_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
+
   this->init();
 }
 
@@ -65,11 +68,9 @@ void SwMatrix::init() {
       this->sw_prev_state[v] = 0;
     }
 
-
   // ininialize input
   for (r = 0; r < this->rowCount; r++) 
     pinMode(rowPins[r], INPUT_PULLUP);
-  
 
   // initialize output
   for (c = 0; c < this->colCount; c++) {
