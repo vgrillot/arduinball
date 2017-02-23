@@ -11,6 +11,7 @@
 #define sw_linear_h
 
 #include <Arduino.h>
+<<<<<<< HEAD
 #include "sw_custom.h"
 
 

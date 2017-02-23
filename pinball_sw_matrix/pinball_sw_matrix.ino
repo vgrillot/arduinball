@@ -6,9 +6,11 @@
 
 #include "hw_rules.h"
 #include "sw_matrix.h"
+#include "sw_linear.h"
+
 
 byte led;
-   unsigned long activity_time_out;
+unsigned long activity_time_out;
 
 /*
 const byte ROWS = 8; // in
@@ -34,15 +36,16 @@ const byte pin_left_slingshot_coil		= 44; //5-violet
 const byte pin_gate_coil				= 34; //6-red //ok
 
 
-
 const byte pin_left_flip_coil 			= 40; // 1-violet //ok
 const byte pin_right_flip_coil 			= 38; // 2-violet //bad
+
 const byte pin_drop_target_reset_coil 	= 36; // 3-orange
 const byte pin_saucer_coil 				= 26; // 4-orange 
 const byte pin_out_hole					= 42; // 5-orange
 
 
 SwMatrix *matrix = 0;
+SwLinear *linear = 0;
 HwRules *rules = 0; 
 
 void setup() {
@@ -85,8 +88,7 @@ void setup() {
 
 // pin_drop_target_reset_coil nop
 
-  Serial.println("rules done!");
-    
+  Serial.println("rules done!");    
 }
 
 
