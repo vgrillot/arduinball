@@ -23,6 +23,8 @@ const byte ROWS  = 5; // out
 byte colPins[COLS] = {23, 25, 27, 29, 31, 33, 35, 37}; // in
 byte rowPins[ROWS] = {39, 41, 43, 45, 47}; // out
 
+const byte LINEAR = 2;
+byte linearPins[LINEAR] = {49, 51};
 
 /*
  * coils
@@ -44,12 +46,11 @@ const byte pin_saucer_coil 				= 26; // 4-orange
 const byte pin_out_hole					= 42; // 5-orange
 
 
-SwMatrix *matrix = 0;
-SwLinear *linear = 0;
+SwMatrix matrix = 0;
+SwLinear linear = 0;
 HwRules *rules = 0; 
 
 void setup() {
-  // put your setup code here, to run once:
 
   pinMode(LED_BUILTIN, OUTPUT);
 
@@ -60,13 +61,21 @@ void setup() {
   Serial.println("init done!");
 
   updated();
-  //setup_switch_matrix();
+
 
   // main object creation
-  matrix = new SwMatrix(1, ROWS, COLS, &rowPins[0], &colPins[0]);
+  byte baseId = 0;
+  baseId = 1;
+  matrix = new SwMatrix(1, ROWS, COLS, &rowPins[0], &colPins[0]); // TODO: +baseId
+  baseId = 100;
+  linear = new SwLinear(2, LINEAR, &linearPins[0]); // TODO: +baseId
+
   rules = new HwRules();
-  //rules->setSwMatrix(matrix);
-  rules->addInput(matrix);
+
+  rules->addInput(&matrix);
+  rules->addInput(&linear);
+
+
   // add some hardcoded rules for test purposes
   
   rules->addHwRule(hw_rule_pulse_on_hit_rule, 31, pin_right_slingshot_coil, 0, 50); //ok

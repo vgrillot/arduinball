@@ -10,8 +10,7 @@
 #ifndef sw_linear_h
 #define sw_linear_h
 
-#include <Arduino.h>
-<<<<<<< HEAD
+#include <arduino.h>
 #include "sw_custom.h"
 
 
@@ -20,9 +19,11 @@ class SwLinear : public SwCustom
     
   public:
 
-	SwLinear(byte id, byte count, byte *pins, byte *ids);
-    void init();
+	SwLinear(byte id, byte count, byte *pins);
+    void init(byte* baseId);
     boolean read();
+    boolean isSwitchActive(byte swId);	
+
     
 };
 

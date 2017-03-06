@@ -12,6 +12,7 @@
 #define sw_matrix_h
 
 #include <Arduino.h>
+#include "sw_custom.h"
 
 
 class SwMatrix : public SwCustom
@@ -20,19 +21,13 @@ class SwMatrix : public SwCustom
     byte __colCount = 0;
     byte __rowCount = 0;
     byte *__rowPins = 0; //input
-    byte *__colPins = 0s; //output
-
-    //byte *sw_id = 0; //[ROWS][COLS];
-    //byte *sw_prev_state = 0; //[ROWS][COLS];
-    
+    byte *__colPins = 0; //output
   public:
-    //byte *sw_state = 0; //[ROWS][COLS];
-
     SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols);
-    void init();
+    void init(byte* baseId);
     byte matrixToId(byte col, byte row);
-    boolean read();
-    
+    boolean read();    
+    boolean isSwitchActive(byte swId);      
 };
 
 
