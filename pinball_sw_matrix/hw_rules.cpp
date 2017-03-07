@@ -69,6 +69,22 @@ void HwRules::addInput(SwCustom *input) {
 
 
 /*
+ *
+ *
+ */
+boolean HwRules::isSwitchActive(byte swId) {
+	SwCustom *inp;
+	for (byte i = 0; i < this->__inputCount; i++)
+	{
+		inp = this->__inputs[i];
+		if (inp->acceptSwId(swId))
+			return inp->isSwitchActive(swId);
+	}	
+}
+
+	
+
+/*
  * readAll()
  * Loop over all inputs and read them
  * !!170223:VG:Creation
@@ -77,7 +93,7 @@ void HwRules::readAll() {
 	SwCustom *inp;
 	for (byte i = 0; i < this->__inputCount; i++)
 	{
-		inp = &(this->__inputs[i]);
+		inp = (this->__inputs[i]);
 		inp->read();
 	}
 }	

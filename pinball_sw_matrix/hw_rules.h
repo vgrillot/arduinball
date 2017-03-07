@@ -24,7 +24,7 @@ class HwRules
 {
   private:
     HwRule __rules[MAX_HW_RULES];
-	SwCustom __inputs[MAX_SW_INPUT];
+	SwCustom * __inputs[MAX_SW_INPUT];
 	byte __inputCount = 0;
 
     //SwMatrix *matrix;
@@ -36,8 +36,6 @@ class HwRules
     HwRules();
 	
     void addInput(SwCustom *input);
-	
-    //void setSwMatrix(SwMatrix *matrix);
 
     void addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration);
     void addPulse(int coilPin, int duration);
