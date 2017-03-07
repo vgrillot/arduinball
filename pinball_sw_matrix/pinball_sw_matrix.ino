@@ -46,8 +46,8 @@ const byte pin_saucer_coil 				= 26; // 4-orange
 const byte pin_out_hole					= 42; // 5-orange
 
 
-SwMatrix matrix = 0;
-SwLinear linear = 0;
+SwMatrix *matrix = 0;
+SwLinear *linear = 0;
 HwRules *rules = 0; 
 
 void setup() {
@@ -72,8 +72,8 @@ void setup() {
 
   rules = new HwRules();
 
-  rules->addInput(&matrix);
-  rules->addInput(&linear);
+  rules->addInput(matrix);
+  rules->addInput(linear);
 
 
   // add some hardcoded rules for test purposes

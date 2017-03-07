@@ -28,7 +28,7 @@ class SwCustom
     virtual void init(byte* baseId);
     virtual boolean read();
     virtual boolean isSwitchActive(byte swId);	
-    
+    boolean acceptSwId(byte swId);
 };
 
 
