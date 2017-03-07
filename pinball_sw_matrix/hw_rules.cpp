@@ -5,11 +5,7 @@
  * 
  */
 
-#include  <Arduino.h>
-
-
 #include "hw_rules.h"
-#include "hw_rule.h"
 
 
 /*
@@ -19,7 +15,7 @@
 HwRules::HwRules() {
   // Clear array
   for (byte i=0; i<MAX_HW_RULES; i++) {
-    this->rules[i].type = hw_rule_ndef;
+    this->__rules[i].type = hw_rule_ndef;
   }
 }
 
@@ -34,7 +30,7 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
   // search for an empty rule slot
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
-    r = &(this->rules[i]);
+    r = &(this->__rules[i]);
     if (r->type == hw_rule_ndef) {
       r->id = i;
       r->type = type;
@@ -65,9 +61,9 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
  * register an input "device"
  * !!170223:VG:Creation
  */
-void HwRules::addInput(SwInput *input) {
-	this->inputs[this->inputCount] = input;
-	this->inputCount++;
+void HwRules::addInput(SwCustom *input) {
+	this->__inputs[this->__inputCount] = input;
+	this->__inputCount++;
 	//TODO:manage max
 }
 
@@ -79,7 +75,7 @@ void HwRules::addInput(SwInput *input) {
  */
 void HwRules::readAll() {
 	SwCustom *inp;
-	for (byte i = 0; i < this->inputCount; i++)
+	for (byte i = 0; i < this->__inputCount; i++)
 	{
 		inp = &(this->__inputs[i]);
 		inp->read();
@@ -220,36 +216,10 @@ void HwRules::runRule(HwRule *r) {
 void HwRules::stopAll() {
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
-    r = &(this->rules[i]);
+    r = &(this->__rules[i]);
     if ((r->type != hw_rule_ndef) && (r->state != hw_rule_state_disabled)) {
 		  r->state = hw_rule_state_release;
     }    
   }  
-}
-
-
-/*
- * isSwitchActive()
- * look into the switch matrix
- * assume for now there is only one switch matrix
- * !!170205:VG:Creation
- * !!170217:VG:Matrix level has been reversed, sw is activated on LOW level
- * !!170219:VG:FIX:swId is a visual ID, not index over array, then -1
- */
-boolean HwRules::isSwitchActive(byte swId) {
-  return this->matrix->sw_state[swId - 1] == 0;
-}
-
-
-/*
- * setSwMatrix
- * connect to the switch matrix
- * only one matrix allowed for now
- * 
- * !!170205:VG:Creation
- * 
- */
-void HwRules::setSwMatrix(SwMatrix *matrix) {
-  this->matrix = matrix;
 }
 

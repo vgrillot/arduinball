@@ -10,10 +10,11 @@
 
 #include <Arduino.h>
 #include "hw_rule.h"
-#include "sw_custom.h" 
+#include "sw_custom.h"
+
 
 const byte MAX_HW_RULES = 20;
-const byte MAX_SW_INPUT = 20;
+const byte MAX_SW_INPUT = 6;
 
 /*
  * Hardware rules classes
@@ -26,7 +27,7 @@ class HwRules
 	SwCustom __inputs[MAX_SW_INPUT];
 	byte __inputCount = 0;
 
-    SwMatrix *matrix;
+    //SwMatrix *matrix;
     unsigned int _time;
 
     boolean isSwitchActive(byte swId);
@@ -34,9 +35,9 @@ class HwRules
   public:
     HwRules();
 	
-	void addInput(SwInput *input);
+    void addInput(SwCustom *input);
 	
-    void setSwMatrix(SwMatrix *matrix);
+    //void setSwMatrix(SwMatrix *matrix);
 
     void addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration);
     void addPulse(int coilPin, int duration);
