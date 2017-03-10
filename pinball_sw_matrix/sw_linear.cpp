@@ -19,9 +19,6 @@
  * 
  */
 SwLinear::SwLinear(byte id, byte count, byte *pins) {
-
-  Serial.println("SwLinear::SwLinear()");
-
   // memory allocation
   this->_count = count;
 
@@ -44,7 +41,6 @@ SwLinear::SwLinear(byte id, byte count, byte *pins) {
 void SwLinear::init(byte* baseId) 
 {
   this->_base = *baseId;
-	Serial.println("SwLinear::init(" + String(this->_count) + ")");
 	for (byte i = 0; i < this->_count; i++)
 	{
     this->_sw_id[i] = *baseId++;
@@ -63,9 +59,10 @@ void SwLinear::init(byte* baseId)
  * 
  */
 boolean SwLinear::read() {
-  String s;
+  //String s;
   boolean updated = false;
 
+  this->_comm->writeSwBeginUpdate();
   for (byte i = 0; i < this->_count; i++) 
   {
 	// enable the column
@@ -75,12 +72,13 @@ boolean SwLinear::read() {
       this->sw_state[i] = byte(digitalRead(this->_pins[i]));
       if (this->_sw_prev_state[i] != this->sw_state[i]) 
 	  {
-        s = String("S") + this->_sw_id[i] 
-            + ":" + this->sw_state[i];
-        Serial.println(s);
+        //s = String("S") + this->_sw_id[i] + ":" + this->sw_state[i];
+        //Serial.println(s);
+        this->_comm->writeSwUpdate(this->_sw_id[i], this->sw_state[i]);
         updated = true; // signify a change
       }
   }
+  this->_comm->writeSwEndUpdate();
   return updated;
 }
 

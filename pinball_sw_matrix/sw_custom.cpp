@@ -9,6 +9,13 @@
 #include "sw_custom.h"
 
 /*
+ * save the comm driver
+ */
+void SwCustom::setComm(Comm *comm) {
+	this->_comm = comm;
+}
+
+/*
  * acceptSwId
  *
  * return True if the swid is a part of this input

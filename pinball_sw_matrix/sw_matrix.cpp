@@ -18,9 +18,6 @@
  * 
  */
 SwMatrix::SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols) {
-
-  Serial.println("SwMatrix::SwMatrix()");
-
   // memory allocation
   this->__rowCount = rowCount;
   this->__colCount = colCount;
@@ -57,7 +54,7 @@ byte SwMatrix::matrixToId(byte col, byte row) {
  */
 void SwMatrix::init(byte* baseId) {
   this->_base = *baseId;
-  Serial.println("SwMatrix::init(" + String(this->__colCount) + "," + String(this->__rowCount) +")");
+  this->_comm->debug("SwMatrix::init(" + String(this->__colCount) + "," + String(this->__rowCount) +")");
   byte r, c, v;
   for (c = 0; c < this->__colCount; c++)
     for (r = 0; r < this->__rowCount; r++)
@@ -94,7 +91,7 @@ boolean SwMatrix::read() {
   String s;
   byte id;
   boolean updated = false;
-
+  this->_comm->writeSwBeginUpdate();
   for (byte c = 0; c < this->__colCount; c++) {
     // enable the column
     digitalWrite(this->__colPins[c], LOW);
@@ -105,16 +102,18 @@ boolean SwMatrix::read() {
       // read current state
       this->sw_state[id] = byte(digitalRead(this->__rowPins[r]));
       if (this->_sw_prev_state[id] != this->sw_state[id]) {
-        s = String("S") + this->_sw_id[id] 
-            + ":ST" + String(c) + ",RT" + String(r)  
-            + ":" + this->sw_state[id];
-        Serial.println(s);
+        //s = String("S") + this->_sw_id[id] 
+        //    + ":ST" + String(c) + ",RT" + String(r)  
+        //    + ":" + this->sw_state[id];
+        //Serial.println(s);
+        this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            
         updated = true; // signify a change
       }
     }
     // disable the column
     digitalWrite(this->__colPins[c], HIGH);
   }
+  this->_comm->writeSwEndUpdate();
   return updated;
 }
 

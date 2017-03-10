@@ -16,15 +16,11 @@
 
 class SwLinear : public SwCustom
 {
-    
   public:
-
 	SwLinear(byte id, byte count, byte *pins);
     void init(byte* baseId);
     boolean read();
     boolean isSwitchActive(byte swId);	
-
-    
 };
 
 

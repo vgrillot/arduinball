@@ -11,11 +11,12 @@
 #define sw_custom_h
 
 #include <Arduino.h>
-
+#include "comm.h"
 
 class SwCustom
 {
   protected:
+    Comm *_comm = 0;
   	byte _base = 0;
     byte _count = 0; 			// nb of input
     byte *_pins = 0; 
@@ -25,6 +26,7 @@ class SwCustom
   public:
     byte *sw_state = 0; //[ROWS][COLS];
 
+    void setComm(Comm *comm);
     virtual void init(byte* baseId);
     virtual boolean read();
     virtual boolean isSwitchActive(byte swId);	

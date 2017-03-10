@@ -21,6 +21,14 @@ HwRules::HwRules() {
 
 
 /*
+ * init the communication driver
+ */
+void HwRules::setComm(Comm *comm) {
+  this->__comm = comm;
+}
+
+
+/*
  * addRule
  * create dynamically a rule to manage 
  * !!170204:VG:Creation
@@ -43,16 +51,19 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
       pinMode(r->coilPin, OUTPUT);
       digitalWrite(r->coilPin, LOW);
 
-      Serial.println("HwRules::addHwRule(" + String(r->id) + "," + 
+      this->__comm->debug("HwRules::addHwRule(" + String(r->id) + "," + 
                                               String(r->enableSwitchId) + "," + 
                                               String(r->coilPin) +")");
+//      Serial.println("HwRules::addHwRule(" + String(r->id) + "," + 
+//                                              String(r->enableSwitchId) + "," + 
+//                                              String(r->coilPin) +")");
       
       return;
     }    
   }
   // Empty slot not found !
   //TODO: raise error, no more slot for new rules...  
-  Serial.println("NO MORE SLOT FOR RULE !!");
+  this->__comm->error("addHwRule:NO MORE SLOT FOR RULE !!");
 }
 
 
@@ -217,7 +228,8 @@ void HwRules::runRule(HwRule *r) {
 		} //!disable
 		
 		if (r->state != old_state) {
-			Serial.println(String(this->_time) + ":" + String(r->id) + ":" + String(old_state) + "->" +  String(r->state));
+			this->__comm->writeSwUpdate(r->id, r->state);
+			//Serial.println(String(this->_time) + ":" + String(r->id) + ":" + String(old_state) + "->" +  String(r->state));
 		}
 		
 	} //!ndef

@@ -7,6 +7,7 @@
 #include "hw_rules.h"
 #include "sw_matrix.h"
 #include "sw_linear.h"
+#include "comm.h"
 
 
 byte led;
@@ -49,16 +50,20 @@ const byte pin_out_hole					= 42; // 5-orange
 SwMatrix *matrix = 0;
 SwLinear *linear = 0;
 HwRules *rules = 0; 
+Comm *comm = 0;
+
+/*
+ *
+ *  S E T U P
+ *
+ */
 
 void setup() {
 
   pinMode(LED_BUILTIN, OUTPUT);
 
-  Serial.begin(9600);
-  while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
-  }
-  Serial.println("init done!");
+  comm = new Comm(true);
+  comm->debug("Init...");
 
   updated();
 
@@ -71,7 +76,7 @@ void setup() {
   linear = new SwLinear(2, LINEAR, &linearPins[0]); // TODO: +baseId
 
   rules = new HwRules();
-
+  rules->setComm(comm);
   rules->addInput(matrix);
   rules->addInput(linear);
 
@@ -97,7 +102,7 @@ void setup() {
 
 // pin_drop_target_reset_coil nop
 
-  Serial.println("rules done!");    
+  comm->debug("rules done!");    
 }
 
 
