@@ -43,7 +43,7 @@ void SwLinear::init(byte* baseId)
   this->_base = *baseId;
 	for (byte i = 0; i < this->_count; i++)
 	{
-    this->_sw_id[i] = *baseId++;
+    this->_sw_id[i] = (*baseId)++;
 		this->sw_state[i] = 0;
 		this->_sw_prev_state[i] = 0;
 		pinMode(this->_pins[i], INPUT_PULLUP);
@@ -59,10 +59,10 @@ void SwLinear::init(byte* baseId)
  * 
  */
 boolean SwLinear::read() {
-  //String s;
+  String s;
   boolean updated = false;
 
-  this->_comm->writeSwBeginUpdate();
+//  this->_comm->writeSwBeginUpdate();
   for (byte i = 0; i < this->_count; i++) 
   {
 	// enable the column
@@ -72,13 +72,13 @@ boolean SwLinear::read() {
       this->sw_state[i] = byte(digitalRead(this->_pins[i]));
       if (this->_sw_prev_state[i] != this->sw_state[i]) 
 	  {
-        //s = String("S") + this->_sw_id[i] + ":" + this->sw_state[i];
-        //Serial.println(s);
-        this->_comm->writeSwUpdate(this->_sw_id[i], this->sw_state[i]);
+        s = String("SL") + this->_sw_id[i] + ":" + this->sw_state[i];
+        Serial.println(s);
+        //this->_comm->writeSwUpdate(this->_sw_id[i], this->sw_state[i]);
         updated = true; // signify a change
       }
   }
-  this->_comm->writeSwEndUpdate();
+//  this->_comm->writeSwEndUpdate();
   return updated;
 }
 
@@ -92,5 +92,5 @@ boolean SwLinear::read() {
  * !!170305:VG:Creation
  */
 boolean SwLinear::isSwitchActive(byte swId) {
-  return this->sw_state[swId - this->_base] == 1;
+  return this->sw_state[swId - this->_base] == 0;
 }

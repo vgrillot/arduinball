@@ -19,8 +19,11 @@
  */
 SwMatrix::SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols) {
   // memory allocation
+  this->_id = id;
+
   this->__rowCount = rowCount;
   this->__colCount = colCount;
+  this->_count = rowCount * colCount;
 
   this->__rowPins  = (byte *) malloc(rowCount * sizeof(byte));
   memcpy(this->__rowPins, rows, rowCount * sizeof(byte));
@@ -31,6 +34,7 @@ SwMatrix::SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols
   this->_sw_id    = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->sw_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->_sw_prev_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
+
 
   //TODO: this->init();
 }
@@ -52,17 +56,18 @@ byte SwMatrix::matrixToId(byte col, byte row) {
  * !!170305:VG:Add baseId
  *
  */
-void SwMatrix::init(byte* baseId) {
+void SwMatrix::init(byte *baseId) {
   this->_base = *baseId;
   this->_comm->debug("SwMatrix::init(" + String(this->__colCount) + "," + String(this->__rowCount) +")");
   byte r, c, v;
   for (c = 0; c < this->__colCount; c++)
     for (r = 0; r < this->__rowCount; r++)
     {
-      //v = byte(1 + c + r * this->__rowCount);
       v = this->matrixToId(c, r);
-      //Serial.println(String(v));
-      this->_sw_id[v] = *baseId++;
+      this->_comm->debug(String(v));
+      this->_sw_id[v] = v + 1;
+      (*baseId)++;
+      this->_comm->debug(String(this->_sw_id[v]));
       this->sw_state[v] = 0;
       this->_sw_prev_state[v] = 0;
     }
@@ -91,7 +96,7 @@ boolean SwMatrix::read() {
   String s;
   byte id;
   boolean updated = false;
-  this->_comm->writeSwBeginUpdate();
+//  this->_comm->writeSwBeginUpdate();
   for (byte c = 0; c < this->__colCount; c++) {
     // enable the column
     digitalWrite(this->__colPins[c], LOW);
@@ -102,18 +107,18 @@ boolean SwMatrix::read() {
       // read current state
       this->sw_state[id] = byte(digitalRead(this->__rowPins[r]));
       if (this->_sw_prev_state[id] != this->sw_state[id]) {
-        //s = String("S") + this->_sw_id[id] 
-        //    + ":ST" + String(c) + ",RT" + String(r)  
-        //    + ":" + this->sw_state[id];
-        //Serial.println(s);
-        this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            
+        s = String("SM") + this->_sw_id[id] 
+            + ":ST" + String(c) + ",RT" + String(r)  
+            + ":" + this->sw_state[id];
+        Serial.println(s);
+        //this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            
         updated = true; // signify a change
       }
     }
     // disable the column
     digitalWrite(this->__colPins[c], HIGH);
   }
-  this->_comm->writeSwEndUpdate();
+//  this->_comm->writeSwEndUpdate();
   return updated;
 }
 

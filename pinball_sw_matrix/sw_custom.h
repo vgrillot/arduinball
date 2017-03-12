@@ -17,6 +17,7 @@ class SwCustom
 {
   protected:
     Comm *_comm = 0;
+    byte _id = 0; // id of the input
   	byte _base = 0;
     byte _count = 0; 			// nb of input
     byte *_pins = 0; 

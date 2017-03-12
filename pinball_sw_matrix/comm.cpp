@@ -40,10 +40,11 @@ void Comm::writeSwBeginUpdate() {
 }
 
 void Comm::writeSwUpdate(const int swId, const boolean active) {
+  Serial.print(F("SWU:"));
 	Serial.print(swId);
 	Serial.print("=");
-	Serial.print(active ? 0:1);
-	Serial.print(",");
+	Serial.println(active ? 0:1);
+	//Serial.print(",");
 }
 
 void Comm::writeSwEndUpdate() {

@@ -53,11 +53,7 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
 
       this->__comm->debug("HwRules::addHwRule(" + String(r->id) + "," + 
                                               String(r->enableSwitchId) + "," + 
-                                              String(r->coilPin) +")");
-//      Serial.println("HwRules::addHwRule(" + String(r->id) + "," + 
-//                                              String(r->enableSwitchId) + "," + 
-//                                              String(r->coilPin) +")");
-      
+                                              String(r->coilPin) +")");     
       return;
     }    
   }
@@ -75,6 +71,7 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
 void HwRules::addInput(SwCustom *input) {
 	this->__inputs[this->__inputCount] = input;
 	this->__inputCount++;
+  input->setComm(this->__comm);
 	//TODO:manage max
 }
 
@@ -91,6 +88,8 @@ boolean HwRules::isSwitchActive(byte swId) {
 		if (inp->acceptSwId(swId))
 			return inp->isSwitchActive(swId);
 	}	
+	this->__comm->error("sw not found:" + String(swId));
+	return false;
 }
 
 	
@@ -100,13 +99,16 @@ boolean HwRules::isSwitchActive(byte swId) {
  * Loop over all inputs and read them
  * !!170223:VG:Creation
  */
-void HwRules::readAll() {
+boolean HwRules::readAll() {
 	SwCustom *inp;
+	boolean result;
+	result = false;
 	for (byte i = 0; i < this->__inputCount; i++)
 	{
 		inp = (this->__inputs[i]);
-		inp->read();
+		result = inp->read() or result;
 	}
+	return result;
 }	
 
 
@@ -115,12 +117,12 @@ void HwRules::readAll() {
  * Loop over all the rules and run them
  * !!170205:VG:Creation
  */
-void HwRules::runAll(unsigned int time) {
+boolean HwRules::runAll(unsigned int time) {
   // save the current time
   this->_time = time;
   
   // real all switches
-  this->readAll();
+  boolean result = this->readAll();
   
   // parse all rules
   HwRule *r;
@@ -130,6 +132,7 @@ void HwRules::runAll(unsigned int time) {
       this->runRule(r);
     }    
   }  
+	return result;
 }
 
 
@@ -228,8 +231,7 @@ void HwRules::runRule(HwRule *r) {
 		} //!disable
 		
 		if (r->state != old_state) {
-			this->__comm->writeSwUpdate(r->id, r->state);
-			//Serial.println(String(this->_time) + ":" + String(r->id) + ":" + String(old_state) + "->" +  String(r->state));
+			this->__comm->debug(String(this->_time) + ":" + String(r->id) + ":" + String(old_state) + "->" +  String(r->state));
 		}
 		
 	} //!ndef

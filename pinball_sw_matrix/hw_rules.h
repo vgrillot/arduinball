@@ -27,7 +27,6 @@ class HwRules
     HwRule __rules[MAX_HW_RULES];
 	SwCustom * __inputs[MAX_SW_INPUT];
 	byte __inputCount = 0;
-
     //SwMatrix *matrix;
     unsigned int _time;
 
@@ -44,9 +43,9 @@ class HwRules
     void addPulse(int coilPin, int duration);
     void addEnable();
 
-	void readAll();
+	boolean readAll();
 	
-    void runAll(unsigned int time);
+    boolean runAll(unsigned int time);
     void runRule(HwRule *r);
     void stopAll();
 };

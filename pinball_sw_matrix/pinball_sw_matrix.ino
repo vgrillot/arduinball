@@ -13,16 +13,10 @@
 byte led;
 unsigned long activity_time_out;
 
-/*
-const byte ROWS = 8; // in
-const byte COLS = 5; // out
-byte rowPins[ROWS] = {23, 25, 27, 2!9, 31, 33, 35, 37}; // in
-byte colPins[COLS] = {22, 24, 26, 28, 30}; // out
-*/
 const byte COLS = 8; // in
 const byte ROWS  = 5; // out
 byte colPins[COLS] = {23, 25, 27, 29, 31, 33, 35, 37}; // in
-byte rowPins[ROWS] = {39, 41, 43, 45, 47}; // out
+byte rowPins[ROWS] = {39, 41, 43, 45, 47}; // outjj
 
 const byte LINEAR = 2;
 byte linearPins[LINEAR] = {49, 51};
@@ -70,16 +64,17 @@ void setup() {
 
   // main object creation
   byte baseId = 0;
-  baseId = 1;
   matrix = new SwMatrix(1, ROWS, COLS, &rowPins[0], &colPins[0]); // TODO: +baseId
-  baseId = 100;
   linear = new SwLinear(2, LINEAR, &linearPins[0]); // TODO: +baseId
 
   rules = new HwRules();
   rules->setComm(comm);
   rules->addInput(matrix);
   rules->addInput(linear);
-
+  baseId = 1;
+  matrix->init(&baseId);
+  baseId = 101;
+  linear->init(&baseId);
 
   // add some hardcoded rules for test purposes
   
@@ -92,8 +87,8 @@ void setup() {
   
   // flip switch are not connected to matrix sw....
   
-  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 18, pin_left_flip_coil, 0, 10); // left flip
-  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 19, pin_right_flip_coil, 0, 10); // right flip
+  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 101, pin_left_flip_coil, 0, 10); // left flip
+  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 102, pin_right_flip_coil, 0, 10); // right flip
   
   rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 23, pin_drop_target_reset_coil, 0, 50); // coil does not work :/
   rules->addHwRule(hw_rule_pulse_on_hit_rule, 20, pin_saucer_coil, 0, 50); //target 3
@@ -130,11 +125,9 @@ void loop() {
   unsigned long t;
   t = millis();
 
-  //read_switchs();
-  if (matrix->read())
-    updated();
   //run rules
-  rules->runAll(t);
+  if (rules->runAll(t))
+    updated();
 
   refresh_led();  
 }
