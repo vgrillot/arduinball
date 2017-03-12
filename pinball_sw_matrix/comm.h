@@ -4,6 +4,7 @@
  * Manage serial communication with RaspPinball platform
  * 
  * !!170310:VG:Creation
+ * !!170312:VG:Add tick() debug info (main loop count by second)
  * 
  */
 
@@ -27,6 +28,8 @@ class Comm
 
 		void debug(String message);
 		void error(String error);
+
+		void tick(unsigned long count);
 
 
 		void writeSwBeginUpdate();

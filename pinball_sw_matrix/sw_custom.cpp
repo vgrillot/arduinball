@@ -26,3 +26,4 @@ void SwCustom::setComm(Comm *comm) {
 boolean SwCustom::acceptSwId(byte swId) {
 	return ((swId >= this->_base) && (swId < this->_base + this->_count));
 }
+

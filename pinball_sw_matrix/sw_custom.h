@@ -23,7 +23,8 @@ class SwCustom
     byte *_pins = 0; 
     byte *_sw_id = 0; 
     byte *_sw_prev_state = 0; 
-    
+    byte *_bounce = 0;
+        
   public:
     byte *sw_state = 0; //[ROWS][COLS];
 

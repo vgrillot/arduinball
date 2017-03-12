@@ -34,6 +34,7 @@ SwMatrix::SwMatrix(byte id, byte rowCount, byte colCount, byte *rows, byte *cols
   this->_sw_id    = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->sw_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
   this->_sw_prev_state = (byte *) malloc((rowCount * colCount) * sizeof(byte));
+  this->_bounce = (byte *) malloc((rowCount * colCount) * sizeof(byte));
 
 
   //TODO: this->init();
@@ -70,6 +71,7 @@ void SwMatrix::init(byte *baseId) {
       this->_comm->debug(String(this->_sw_id[v]));
       this->sw_state[v] = 0;
       this->_sw_prev_state[v] = 0;
+      this->_bounce[v] = 0;
     }
 
   // ininialize input

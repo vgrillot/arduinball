@@ -12,6 +12,9 @@
 
 byte led;
 unsigned long activity_time_out;
+unsigned long period_time_out;
+unsigned long period_count;
+const unsigned long period_interval = 5000;
 
 const byte COLS = 8; // in
 const byte ROWS  = 5; // out
@@ -54,6 +57,7 @@ Comm *comm = 0;
 
 void setup() {
 
+  period_count = 0;
   pinMode(LED_BUILTIN, OUTPUT);
 
   comm = new Comm(true);
@@ -124,11 +128,19 @@ void refresh_led() {
 void loop() {
   unsigned long t;
   t = millis();
+  
 
   //run rules
   if (rules->runAll(t))
     updated();
 
+  period_count++;
+  if (t > period_time_out) {
+    period_time_out = t + 5000;
+    period_count = period_count * 1000 / period_interval;
+    comm->tick(period_count);
+    period_count = 0;
+  }
   refresh_led();  
 }
 

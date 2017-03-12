@@ -23,7 +23,14 @@ void Comm::read() {
 void Comm::printf(char *fmt, ...) {
 
 }
-		
+
+
+
+void Comm::tick(unsigned long count) {
+	Serial.print(F("TCK:"));
+	Serial.println(count);	
+}
+	
 		
 void Comm::debug(String message) {
 	Serial.print(F("DBG:"));
