@@ -9,21 +9,46 @@
 
 
 Comm::Comm(const boolean waitSerial) {
-  Serial.begin(9600);
-  if (waitSerial)
-    // wait for serial port to connect. Needed for native USB port only
-  	while (!Serial);
+	this->__input.reserve(this->MAXBUF);
+	this->readReset();
+  	Serial.begin(9600);
+  	if (waitSerial)
+    	// wait for serial port to connect. Needed for native USB port only
+  		while (!Serial);
+
+}
+
+
+void Comm::readReset() {
+	this->__bufptr = __buffer;
+	this->__buflen = 0;
+	this->__input = "";
+	this->__ready = false;
 }
 
 
 void Comm::read() {
+	while (Serial.available() > 0) {
+		char in = (char) Serial.read();
+		this->__input += in;
+		if {in == '\n') {
+			this->__ready = true;
+			break;
+		}
+	}
 
 }
 
-void Comm::printf(char *fmt, ...) {
 
+boolean Comm::readLn() {
+	if (this->__ready) {
+		this->input = this->__input;
+		this->readReset();
+		return true;
+	}
+	else
+		return false;
 }
-
 
 
 void Comm::tick(unsigned long count) {

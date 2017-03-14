@@ -16,14 +16,22 @@
 class Comm
 {
 	private:
+		const byte MAXBUF 255;
+	  	char __buffer[MAXBUF];
+		char *__bufptr;
+		byte __buflen;
+		String __input;
+		boolean ready;
+		void readReset();
 		void write(String s);
 
-		void printf(char *fmt, ...);
-
 	public:
+		String input;
 		Comm(const boolean waitSerial);
 
 		void read();
+
+		boolean readLn();
 		
 
 		void debug(String message);

@@ -129,7 +129,6 @@ void loop() {
   unsigned long t;
   t = millis();
   
-
   //run rules
   if (rules->runAll(t))
     updated();
