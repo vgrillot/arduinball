@@ -5,17 +5,27 @@
  * 
  * Protocol:
  *
- * RaspPinball>> CNF:
- *          CNF : set config
- * 
- * RaspPinball>> HWR:
- *          HWR : set hardwre rule
- * 
- *
- *
- *
- *
- *
+ * RaspPinball >> Arduino
+ *      IDENTITY
+ *          >> I?
+ *          << I=version
+ *      RULES CLEAR
+ *          >> C?<coil>
+ *          << 
+ *      RULES ADD
+ *          >> A?<coil>:<>:<>
+ *          << 
+ *      DRIVER PULSE
+ *          >>P?<coil>:
+ *      DRIVER ENABLE
+ *          >>E?<coil>
+ *          <<
+ *      DRIVER DISABLE
+ *          >>D?<coil>
+ *          <<
+ *      SWITCH UPDATE     
+ *          >>
+ *          <<S=<sw>:<state>
  *
  *
  *
