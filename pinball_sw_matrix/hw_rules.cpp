@@ -253,3 +253,15 @@ void HwRules::stopAll() {
   }  
 }
 
+
+void HwRules::addPulse(int coilPin, int duration) {
+
+}
+
+void HwRules::addEnable(int coilPin){
+
+}
+
+void HwRules::addDisable(int coilPin){
+	
+}

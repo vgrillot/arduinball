@@ -88,8 +88,8 @@ boolean SwLinear::read() {
         // save previous state
         this->_sw_prev_state[i] = sw_state[i];
         s = String("SL") + this->_sw_id[i] + ":" + this->sw_state[i];
-        Serial.println(s);
-        //this->_comm->writeSwUpdate(this->_sw_id[i], this->sw_state[i]);
+        //Serial.println(s);
+        this->_comm->writeSwUpdate(this->_sw_id[i], this->sw_state[i]);
         updated = true; // signify a change
       }
   }

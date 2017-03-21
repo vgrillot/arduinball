@@ -41,7 +41,8 @@ class HwRules
 
     void addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration);
     void addPulse(int coilPin, int duration);
-    void addEnable();
+    void addEnable(int coilPin);
+    void addDisable(int coilPin);
 
 	boolean readAll();
 	

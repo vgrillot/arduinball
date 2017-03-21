@@ -36,7 +36,6 @@ void Comm::read() {
 			break;
 		}
 	}
-
 }
 
 
@@ -62,19 +61,24 @@ void Comm::debug(String message) {
 	Serial.println(message);
 }
 
+void Comm::warning(String warning) {
+	Serial.print(F("WRN:"));
+	Serial.println(warning);
+}
+
 void Comm::error(String error) {
 	Serial.print(F("ERR:"));
 	Serial.println(error);
 }
-
+	
 void Comm::writeSwBeginUpdate() {
 	Serial.print(F("SWU:"));
 }
 
 void Comm::writeSwUpdate(const int swId, const boolean active) {
-  Serial.print(F("SWU:"));
+    Serial.print(F("SWU:"));
 	Serial.print(swId);
-	Serial.print("=");
+	Serial.print(";");
 	Serial.println(active ? 0:1);
 	//Serial.print(",");
 }

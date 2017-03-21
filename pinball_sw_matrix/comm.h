@@ -35,6 +35,7 @@ class Comm
 		
 
 		void debug(String message);
+		void warning(String warning);
 		void error(String error);
 
 		void tick(unsigned long count);

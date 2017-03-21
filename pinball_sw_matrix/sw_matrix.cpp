@@ -112,8 +112,8 @@ boolean SwMatrix::read() {
         s = String("SM") + this->_sw_id[id] 
             + ":ST" + String(c) + ",RT" + String(r)  
             + ":" + this->sw_state[id];
-        Serial.println(s);
-        //this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            
+        //Serial.println(s);
+        this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            
         updated = true; // signify a change
       }
     }
