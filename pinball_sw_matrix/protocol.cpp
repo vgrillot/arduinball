@@ -10,11 +10,11 @@
 
 #include "protocol.h"
 
-Protocol::Protocol(Comm *comm; HwRules *rules) {
+Protocol::Protocol(Comm *comm, HwRules *rules) {
     this->__input.reserve(255);
     this->__nextWord.reserve(255);
-    this->comm = comm;
-    this->rules = rules;
+    this->__comm = comm;
+    this->__rules = rules;
 }
 
 
@@ -33,27 +33,27 @@ boolean Protocol::run() {
     
     if (this->__comm->readLn()) {
         this->__input = this->__comm->input;
-        if ((this->getNextWord() && (this->__nextWord == "RUL")) {
+        if (this->getNextWord() && (this->__nextWord == "RUL")) {
             if (this->getNextWord() && (this->__nextWord == "CLR")) {
                 // RUL CLR SW COIL
                 if (this->getNextWord())
-                    enableSwitchId = (int)this->__nextWord;
+                    enableSwitchId = this->__nextWord.toInt();
                 if (this->getNextWord())
-                    coilPin = (int)this->__nextWord;
+                    coilPin = this->__nextWord.toInt();
                 this->__rules->clearRule(coilPin, enableSwitchId);
             }
             else if (this->__nextWord == "ADD") {
                 // RUL ADD TYPE SW COIL SW DURATION
                 if (this->getNextWord())
-                    type = (HwRuleType)((int)this->__nextWord - ord('0'))
+                    type = (HwRuleType)(this->__nextWord.toInt());
                 if (this->getNextWord())
-                    enableSwitchId = (int)this->__nextWord;
+                    enableSwitchId = this->__nextWord.toInt();
                 if (this->getNextWord())
-                    coilPin = (int)this->__nextWord;
+                    coilPin = this->__nextWord.toInt();
                 if (this->getNextWord())
-                    disableSwitchId = (int)this->__nextWord;
+                    disableSwitchId = this->__nextWord.toInt();
                 if (this->getNextWord())
-                    duration = (int)this->__nextWord;
+                    duration = this->__nextWord.toInt();
                 this->__rules->addHwRule(type, enableSwitchId, coilPin, disableSwitchId, duration);
             }
         }
@@ -61,21 +61,21 @@ boolean Protocol::run() {
             if (this->getNextWord() && (this->__nextWord == "PUL")) {
                 // DRV PUL COIL DURATION
                 if (this->getNextWord())
-                    coilPin = (int)this->__nextWord;
+                    coilPin = this->__nextWord.toInt();
                 if (this->getNextWord())
-                    duration = (int)this->__nextWord;
+                    duration = this->__nextWord.toInt();
                 this->__rules->addPulse(coilPin, duration);
             }
             else if (this->__nextWord == "ENB") {
                 // DRV ENB
                 if (this->getNextWord())
-                    coilPin = (int)this->__nextWord;
+                    coilPin = this->__nextWord.toInt();
                 this->__rules->addEnable(coilPin);
             }
             else if (this->__nextWord == "DIS") {
                 // DRV DIS
                 if (this->getNextWord())
-                    coilPin = (int)this->__nextWord;
+                    coilPin = this->__nextWord.toInt();
                 this->__rules->addDisable(coilPin);
             }
         }
@@ -87,8 +87,3 @@ boolean Protocol::getNextWord() {
 
 }
 
-
-boolean Protocol::decode() {
-
-
-}

@@ -33,8 +33,8 @@
  *
  */
 
- #ifndef protocol_h
- #define protocol_h
+#ifndef protocol_h
+#define protocol_h
 
 #include <Arduino.h>
 #include "comm.h"
@@ -48,9 +48,10 @@ class Protocol {
         String __nextWord;
         boolean getNextWord();
     public:
-        Protocol(Comm *comm; HwRules *rules);
-        void decode();
-}
+        Protocol(Comm *comm, HwRules *rules);
+        boolean run();
+
+};
 
 
- #endif
+#endif

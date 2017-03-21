@@ -31,6 +31,7 @@ class HwRules
     unsigned int _time;
 
     boolean isSwitchActive(byte swId);
+    void runRule(HwRule *r);
 
   public:
     HwRules();
@@ -44,10 +45,12 @@ class HwRules
     void addEnable(int coilPin);
     void addDisable(int coilPin);
 
+    void clearRule(int coilPin, int enableSwitchId);
+
+
 	boolean readAll();
 	
     boolean runAll(unsigned int time);
-    void runRule(HwRule *r);
     void stopAll();
 };
 

@@ -13,15 +13,16 @@
 
 #include <Arduino.h>
 
+
 class Comm
 {
 	private:
-		const byte MAXBUF 255;
+		static const byte MAXBUF = 255;
 	  	char __buffer[MAXBUF];
 		char *__bufptr;
 		byte __buflen;
 		String __input;
-		boolean ready;
+		boolean __ready;
 		void readReset();
 		void write(String s);
 

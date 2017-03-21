@@ -31,7 +31,7 @@ void Comm::read() {
 	while (Serial.available() > 0) {
 		char in = (char) Serial.read();
 		this->__input += in;
-		if {in == '\n') {
+		if (in == '\n') {
 			this->__ready = true;
 			break;
 		}
