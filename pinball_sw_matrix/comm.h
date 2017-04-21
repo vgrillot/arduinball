@@ -17,10 +17,10 @@
 class Comm
 {
 	private:
-		static const byte MAXBUF = 255;
-	  	char __buffer[MAXBUF];
-		char *__bufptr;
-		byte __buflen;
+		static const int MAXBUF = 512;
+	  //char __buffer[MAXBUF];
+		//char *__bufptr;
+		//byte __buflen;
 		String __input;
 		boolean __ready;
 		void readReset();
@@ -35,7 +35,8 @@ class Comm
 		boolean readLn();
 		
 
-		void debug(String message);
+    void debug(String message);
+    void info(String message);
 		void warning(String warning);
 		void error(String error);
 
