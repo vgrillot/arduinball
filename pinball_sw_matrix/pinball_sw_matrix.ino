@@ -8,6 +8,7 @@
 #include "sw_matrix.h"
 #include "sw_linear.h"
 #include "comm.h"
+#include "protocol.h"
 
 
 byte led;
@@ -21,8 +22,8 @@ const byte ROWS  = 5; // out
 byte colPins[COLS] = {23, 25, 27, 29, 31, 33, 35, 37}; // in
 byte rowPins[ROWS] = {39, 41, 43, 45, 47}; // outjj
 
-const byte LINEAR = 2;
-byte linearPins[LINEAR] = {49, 51};
+const byte LINEAR = 4;
+byte linearPins[LINEAR] = {49, 51, 48, 50};
 
 /*
  * coils
@@ -48,6 +49,7 @@ SwMatrix *matrix = 0;
 SwLinear *linear = 0;
 HwRules *rules = 0; 
 Comm *comm = 0;
+Protocol *protocol = 0;
 
 /*
  *
@@ -80,6 +82,9 @@ void setup() {
   baseId = 101;
   linear->init(&baseId);
 
+  protocol = new Protocol(comm, rules);
+
+/*** no momre hardcoded rules ***
   // add some hardcoded rules for test purposes
   
   rules->addHwRule(hw_rule_pulse_on_hit_rule, 31, pin_right_slingshot_coil, 0, 50); //ok
@@ -91,17 +96,19 @@ void setup() {
   
   // flip switch are not connected to matrix sw....
   
-  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 101, pin_left_flip_coil, 0, 10); // left flip
+  rules-
+  >addHwRule(hw_rule_pulse_on_hit_and_release_rule, 101, pin_left_flip_coil, 0, 10); // left flip
   rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 102, pin_right_flip_coil, 0, 10); // right flip
   
-  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 23, pin_drop_target_reset_coil, 0, 50); // coil does not work :/
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 20, pin_saucer_coil, 0, 50); //target 3
+  rules->addHwRule(hw_rule_pulse_on_hit_rule, 23, pin_drop_target_reset_coil, 0, 50); 
+  rules->addHwRule(hw_rule_pulse_on_hit_rule, 22, pin_saucer_coil, 0, 50); //center target
   rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 26, pin_gate_coil, 0, 50); //star 5
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 27, pin_out_hole, 0, 50); //star 4
+  rules->addHwRule(hw_rule_pulse_on_hit_rule, 103, pin_out_hole, 0, 50); //real coin button
 
 // pin_drop_target_reset_coil nop
 
   comm->debug("rules done!");    
+  ***/
 }
 
 
@@ -132,6 +139,9 @@ void loop() {
   //run rules
   if (rules->runAll(t))
     updated();
+
+  comm->read();
+  protocol->run();
 
   period_count++;
   if (t > period_time_out) {
