@@ -25,12 +25,14 @@ class HwRules
   private:
     Comm *__comm;
     HwRule __rules[MAX_HW_RULES];
-	SwCustom * __inputs[MAX_SW_INPUT];
-	byte __inputCount = 0;
+  	SwCustom * __inputs[MAX_SW_INPUT];
+	  byte __inputCount = 0;
     //SwMatrix *matrix;
     unsigned int _time;
 
     boolean isSwitchActive(byte swId);
+    boolean existsSwitch(byte swId);
+    
     void runRule(HwRule *r);
 
   public:

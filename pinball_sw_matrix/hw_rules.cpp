@@ -36,24 +36,36 @@ void HwRules::setComm(Comm *comm) {
  */
 void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration) {
   // search for an empty rule slot
+  if ((enableSwitchId > 0) && (!this->existsSwitch(enableSwitchId)))
+  {
+    this->__comm->error("addHwRule:en_sw doesn't exists!!");
+    return;
+  }
+  if (coilPin > 100) 
+  {
+    this->__comm->error("addHwRule:coil_pin doesn't exists!!");
+    return;
+  }  
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
     r = &(this->__rules[i]);
-    if (r->type == hw_rule_ndef) {
+    if ((r->type == hw_rule_ndef) || 
+        ((r->coilPin == coilPin) && (r->enableSwitchId == enableSwitchId))) {
       r->id = i;
       r->type = type;
       r->enableSwitchId = enableSwitchId;
       r->coilPin = coilPin;
       r->disableSwitchId = disableSwitchId;
-	  r->state = hw_rule_state_enabled;
+	    r->state = hw_rule_state_enabled;
       r->timeout = 0;
       r->duration = duration;
       pinMode(r->coilPin, OUTPUT);
       digitalWrite(r->coilPin, LOW);
 
-      this->__comm->debug("HwRules::addHwRule(" + String(r->id) + "," + 
-                                              String(r->enableSwitchId) + "," + 
-                                              String(r->coilPin) +")");     
+      this->__comm->info("HwRules::addHwRule(id=" + String(r->id) + ",t=" + 
+                                              String(r->type) + ",coil=" + 
+                                              String(r->coilPin) + ",sw=" + 
+                                              String(r->enableSwitchId) +")");     
       return;
     }    
   }
@@ -77,22 +89,39 @@ void HwRules::addInput(SwCustom *input) {
 
 
 /*
- *
+ * isSwitchActive()
  *
  */
 boolean HwRules::isSwitchActive(byte swId) {
-	SwCustom *inp;
-	for (byte i = 0; i < this->__inputCount; i++)
-	{
-		inp = this->__inputs[i];
-		if (inp->acceptSwId(swId))
-			return inp->isSwitchActive(swId);
-	}	
-	this->__comm->error("sw not found:" + String(swId));
-	return false;
+  SwCustom *inp;
+  for (byte i = 0; i < this->__inputCount; i++)
+  {
+    inp = this->__inputs[i];
+    if (inp->acceptSwId(swId))
+      return inp->isSwitchActive(swId);
+  } 
+  this->__comm->error("HwRules:sw not found:" + String(swId));
+  return false;
 }
 
-	
+  
+/*
+ * existsSwitch()
+ * return true if the switch id exists in any input
+ * !!170419:VG:Creation
+ */
+boolean HwRules::existsSwitch(byte swId) {
+  SwCustom *inp;
+  for (byte i = 0; i < this->__inputCount; i++)
+  {
+    inp = this->__inputs[i];
+    if (inp->acceptSwId(swId))
+      return true;
+  } 
+  return false;
+}
+
+  
 
 /*
  * readAll()
@@ -151,11 +180,13 @@ void HwRules::runRule(HwRule *r) {
 		if (r->state != hw_rule_state_disabled) {
 		
 			// read the main switch state
-			switch_active = this->isSwitchActive(r->enableSwitchId);
+      if (r->enableSwitchId != 0) {
+			  switch_active = this->isSwitchActive(r->enableSwitchId);
+      }
 
 			switch(r->state) {
 				case hw_rule_state_enabled: //1
-					if (switch_active) {
+					if ((r->enableSwitchId == 0) || (switch_active)) {
 						// enable the coil
 						digitalWrite(r->coilPin, HIGH);
 						r->state = hw_rule_state_activated;
@@ -209,7 +240,10 @@ void HwRules::runRule(HwRule *r) {
 				
 				case hw_rule_state_wait_duration: //5
 					if (this->_time > r->timeout) {
-						r->state = hw_rule_state_release;
+            if (r->type == hw_rule_pulse)
+              r->state = hw_rule_state_clear;
+            else
+						  r->state = hw_rule_state_release;
 					}					
 					break;
 					
@@ -225,13 +259,20 @@ void HwRules::runRule(HwRule *r) {
             r->state = hw_rule_state_enabled;
           }
           break;
-        
+
+        case hw_rule_state_clear:
+          // disable the coil
+          digitalWrite(r->coilPin, LOW);
+          r->type = hw_rule_ndef;
+          r->state = hw_rule_state_disabled; // should not be used
+          break;
 
 			} //state?
 		} //!disable
 		
 		if (r->state != old_state) {
-			this->__comm->debug(String(this->_time) + ":" + String(r->id) + ":" + String(old_state) + "->" +  String(r->state));
+			// too verbose ! 
+			this->__comm->debug(String(this->_time) + ":" + String(r->id) + ":C" + String(r->coilPin) + ":" + String(old_state) + "->" +  String(r->state));
 		}
 		
 	} //!ndef
@@ -255,13 +296,45 @@ void HwRules::stopAll() {
 
 
 void HwRules::addPulse(int coilPin, int duration) {
-
+  this->addHwRule(hw_rule_pulse, 0, coilPin, 0, duration); 
 }
 
 void HwRules::addEnable(int coilPin){
-
+  this->addHwRule(hw_rule_enable, 0, coilPin, 0, 0); 
 }
 
+/*
+ * addDisable()
+ * Stop a coil activated by addEnable()
+ * !!150418:VG:Creation
+ */
 void HwRules::addDisable(int coilPin){
-	
+  //search the enabled rule
+  HwRule *r;
+  for (byte i=0; i<MAX_HW_RULES; i++) {
+    r = &(this->__rules[i]);
+    if ((r->type == hw_rule_enable) && (r->coilPin == coilPin)) {
+      r->state = hw_rule_state_release;
+    }    
+  }    
 }
+
+
+/*
+ * clearRule()
+ * search a matching rule and disable it
+ */
+void HwRules::clearRule(int coilPin, int enableSwitchId) {
+  //search the enabled rule
+  HwRule *r;
+  for (byte i=0; i<MAX_HW_RULES; i++) {
+    r = &(this->__rules[i]);
+    if ((r->enableSwitchId == enableSwitchId) && (r->coilPin == coilPin)) {
+      r->state = hw_rule_state_clear;
+    }    
+  }      
+}
+
+
+
+

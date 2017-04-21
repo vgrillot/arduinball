@@ -38,7 +38,8 @@ enum HwRuleState: byte {
   hw_rule_state_start_duration = 4, // rule is still active, start the timeout
   hw_rule_state_wait_duration = 5,  // rule is still active, waiting for the timeout
   hw_rule_state_release = 6,  			// coil set to OFF
-  hw_rule_state_wait_final_release = 7 // ensure sw is deactivated
+  hw_rule_state_wait_final_release = 7, // ensure sw is deactivated
+  hw_rule_state_clear = 8 // to be disable and then clear
 };
 
 
