@@ -9,9 +9,10 @@
 
 
 Comm::Comm(const boolean waitSerial) {
-	this->__input.reserve(this->MAXBUF);
+  this->__input.reserve(this->MAXBUF);
+  this->input.reserve(128);
 	this->readReset();
-  	Serial.begin(9600);
+  	Serial.begin(115200);
   	if (waitSerial)
     	// wait for serial port to connect. Needed for native USB port only
   		while (!Serial);
@@ -20,22 +21,37 @@ Comm::Comm(const boolean waitSerial) {
 
 
 void Comm::readReset() {
-	this->__bufptr = __buffer;
-	this->__buflen = 0;
+	//this->__bufptr = __buffer;
+	//this->__buflen = 0;
 	this->__input = "";
 	this->__ready = false;
 }
 
 
+/*
+ * read()
+ * Poll the serial port
+ * '*' is a char used to fill the buffer (f*ckin debug!)
+ * '!' is a secondary separator
+ * 
+ */
 void Comm::read() {
+  boolean do_wait = false;
+  if (this->__ready)
+    return;
 	while (Serial.available() > 0) {
+    do_wait = true;
 		char in = (char) Serial.read();
-		this->__input += in;
-		if (in == '\n') {
+		if ((in == '\n') || (in == '\r') || (in == '!')) {
 			this->__ready = true;
 			break;
 		}
+    else
+      if (in != '*')
+        this->__input += in;
 	}
+  if (do_wait)
+    delay(1);
 }
 
 
@@ -57,8 +73,13 @@ void Comm::tick(unsigned long count) {
 	
 		
 void Comm::debug(String message) {
-	Serial.print(F("DBG:"));
-	Serial.println(message);
+  Serial.print(F("DBG:"));
+  Serial.println(message);
+}
+
+void Comm::info(String message) {
+  Serial.print(F("INF:"));
+  Serial.println(message);
 }
 
 void Comm::warning(String warning) {
