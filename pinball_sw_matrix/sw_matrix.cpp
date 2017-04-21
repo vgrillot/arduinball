@@ -95,7 +95,7 @@ void SwMatrix::init(byte *baseId) {
  * 
  */
 boolean SwMatrix::read() {
-  String s;
+  //String s;
   byte id;
   boolean updated = false;
 //  this->_comm->writeSwBeginUpdate();
@@ -104,18 +104,31 @@ boolean SwMatrix::read() {
     digitalWrite(this->__colPins[c], LOW);
     for (byte r = 0; r < this->__rowCount; r++) {
       id = this->matrixToId(c, r);
-      // save previous state
-      this->_sw_prev_state[id] = sw_state[id];
-      // read current state
-      this->sw_state[id] = byte(digitalRead(this->__rowPins[r]));
-      if (this->_sw_prev_state[id] != this->sw_state[id]) {
-        s = String("SM") + this->_sw_id[id] 
-            + ":ST" + String(c) + ",RT" + String(r)  
-            + ":" + this->sw_state[id];
-        //Serial.println(s);
-        this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            
-        updated = true; // signify a change
+
+      // read current sw state
+      byte cur = byte(digitalRead(this->__rowPins[r]));
+      // read the bounce counter
+      byte b = this->_bounce[id];
+      if (cur != this->sw_state[id]) {
+        // check if the state is changing for more than 5 ticks
+        if (++b > 5) {
+          //this->_sw_prev_state[id] != sw_state[id];
+          // ok, validate the new state change
+          sw_state[id] = cur;
+        }
       }
+      else
+        b = 0;
+      this->_bounce[id] = b;
+
+      //if (this->_sw_id[id] != 6) {
+        if (this->_sw_prev_state[id] != this->sw_state[id]) {
+            // save previous state
+            this->_sw_prev_state[id] = sw_state[id];
+            this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            
+            updated = true; // signify a change
+        }
+      //}
     }
     // disable the column
     digitalWrite(this->__colPins[c], HIGH);
