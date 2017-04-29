@@ -2,7 +2,7 @@
  * hw_rules
  * 
  * !!170203:VG:Creation
- * 
+ * !!170429:VG:All actions must return a boolean
  */
 
 #include "hw_rules.h"
@@ -34,18 +34,23 @@ void HwRules::setComm(Comm *comm) {
  * !!170204:VG:Creation
  * !!170219:VG:set pin to output and low by default
  */
-void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration) {
+boolean HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int disableSwitchId, unsigned int duration) {
   // search for an empty rule slot
   if ((enableSwitchId > 0) && (!this->existsSwitch(enableSwitchId)))
   {
     this->__comm->error("addHwRule:en_sw doesn't exists!!");
-    return;
+    return false;
   }
-  if (coilPin > 100) 
+  if ((coilPin == 0) || (coilPin > 100)) 
   {
     this->__comm->error("addHwRule:coil_pin doesn't exists!!");
-    return;
+    return false;
   }  
+  if ((enableSwitchId == 0) && rule_type_need_sw(type))
+  {
+    this->__comm->error("addHwRule:mandatory enable sw not set!!");
+    return false;    
+  }
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
     r = &(this->__rules[i]);
@@ -66,12 +71,13 @@ void HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int di
                                               String(r->type) + ",coil=" + 
                                               String(r->coilPin) + ",sw=" + 
                                               String(r->enableSwitchId) +")");     
-      return;
+      return true;
     }    
   }
   // Empty slot not found !
   //TODO: raise error, no more slot for new rules...  
   this->__comm->error("addHwRule:NO MORE SLOT FOR RULE !!");
+  return false;
 }
 
 
@@ -295,12 +301,12 @@ void HwRules::stopAll() {
 }
 
 
-void HwRules::addPulse(int coilPin, int duration) {
-  this->addHwRule(hw_rule_pulse, 0, coilPin, 0, duration); 
+boolean HwRules::addPulse(int coilPin, int duration) {
+  return this->addHwRule(hw_rule_pulse, 0, coilPin, 0, duration); 
 }
 
-void HwRules::addEnable(int coilPin){
-  this->addHwRule(hw_rule_enable, 0, coilPin, 0, 0); 
+boolean HwRules::addEnable(int coilPin){
+  return this->addHwRule(hw_rule_enable, 0, coilPin, 0, 0); 
 }
 
 /*
@@ -308,15 +314,17 @@ void HwRules::addEnable(int coilPin){
  * Stop a coil activated by addEnable()
  * !!150418:VG:Creation
  */
-void HwRules::addDisable(int coilPin){
+boolean HwRules::addDisable(int coilPin){
   //search the enabled rule
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
     r = &(this->__rules[i]);
     if ((r->type == hw_rule_enable) && (r->coilPin == coilPin)) {
       r->state = hw_rule_state_release;
+      return true;
     }    
   }    
+  return false; // rule not found !
 }
 
 
@@ -324,15 +332,17 @@ void HwRules::addDisable(int coilPin){
  * clearRule()
  * search a matching rule and disable it
  */
-void HwRules::clearRule(int coilPin, int enableSwitchId) {
+boolean HwRules::clearRule(int coilPin, int enableSwitchId) {
   //search the enabled rule
   HwRule *r;
   for (byte i=0; i<MAX_HW_RULES; i++) {
     r = &(this->__rules[i]);
     if ((r->enableSwitchId == enableSwitchId) && (r->coilPin == coilPin)) {
       r->state = hw_rule_state_clear;
+      return true;
     }    
   }      
+  return false; // rule not found
 }
 
 

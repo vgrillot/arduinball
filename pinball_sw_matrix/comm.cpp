@@ -51,13 +51,14 @@ void Comm::read() {
         this->__input += in;
 	}
   if (do_wait)
-    delay(1);
+    delay(5);
 }
 
 
 boolean Comm::readLn() {
 	if (this->__ready) {
 		this->input = this->__input;
+    this->debug("READLN:" + this->__input);
 		this->readReset();
 		return true;
 	}

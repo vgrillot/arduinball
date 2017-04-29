@@ -27,6 +27,8 @@ enum HwRuleType: byte {
 };
 
 
+bool rule_type_need_sw(HwRuleType rt);
+
 /*
  * Hardware rule state machine
  */
