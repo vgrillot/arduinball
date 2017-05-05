@@ -94,7 +94,7 @@ boolean Protocol::run() {
          if (!result) 
             this->__comm->error("PROTOCOL:command run failed");
      }
-     return result;
+       return result;
 }
 
 
