@@ -2,6 +2,7 @@
  * hw_rule
  * 
  * !!170203:VG:Creation
+ * !!170505:VG:manage duplicate messages
  * 
  */
 
@@ -10,6 +11,7 @@
 
 Comm::Comm(const boolean waitSerial) {
   this->__input.reserve(this->MAXBUF);
+  this->__previous_input.reserve(this->MAXBUF);
   this->input.reserve(128);
 	this->readReset();
   	Serial.begin(115200);
@@ -21,8 +23,6 @@ Comm::Comm(const boolean waitSerial) {
 
 
 void Comm::readReset() {
-	//this->__bufptr = __buffer;
-	//this->__buflen = 0;
 	this->__input = "";
 	this->__ready = false;
 }
@@ -36,29 +36,35 @@ void Comm::readReset() {
  * 
  */
 void Comm::read() {
-  boolean do_wait = false;
-  if (this->__ready)
-    return;
+    boolean do_wait = false;
+    if (this->__ready)
+        return;
 	while (Serial.available() > 0) {
-    do_wait = true;
+        do_wait = true;
 		char in = (char) Serial.read();
 		if ((in == '\n') || (in == '\r') || (in == '!')) {
 			this->__ready = true;
 			break;
 		}
-    else
-      if (in != '*')
-        this->__input += in;
+        else
+            if (in != '*')
+                this->__input += in;
 	}
-  if (do_wait)
-    delay(5);
+    if (do_wait)
+        delay(5);
 }
 
 
 boolean Comm::readLn() {
 	if (this->__ready) {
+	    if (this->__input == this->__previous_input) {
+	        // duplicated message, skip it...
+    		this->readReset();
+	        return false;
+	    }
+	    this->__previous_input = this->__input;
 		this->input = this->__input;
-    this->debug("READLN:" + this->__input);
+        //this->debug("READLN:" + this->__input);
 		this->readReset();
 		return true;
 	}

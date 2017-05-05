@@ -93,8 +93,8 @@ boolean Protocol::run() {
         this->__nextWord = "";
          if (!result) 
             this->__comm->error("PROTOCOL:command run failed");
-     }
-       return result;
+    }
+    return result;
 }
 
 

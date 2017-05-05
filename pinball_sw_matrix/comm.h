@@ -5,7 +5,9 @@
  * 
  * !!170310:VG:Creation
  * !!170312:VG:Add tick() debug info (main loop count by second)
- * 
+ * !!170505:VG:manage duplicate messages
+ *
+ *
  */
 
 #ifndef comm_h
@@ -18,9 +20,7 @@ class Comm
 {
 	private:
 		static const int MAXBUF = 512;
-	  //char __buffer[MAXBUF];
-		//char *__bufptr;
-		//byte __buflen;
+		String __previous_input;
 		String __input;
 		boolean __ready;
 		void readReset();
