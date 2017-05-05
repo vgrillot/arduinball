@@ -324,6 +324,7 @@ boolean HwRules::addDisable(int coilPin){
       return true;
     }    
   }    
+  this->__comm->debug("No enabled coil found to disable");
   return false; // rule not found !
 }
 
