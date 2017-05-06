@@ -260,11 +260,14 @@ void HwRules::runRule(HwRule *r) {
 					r->timeout = 0;
 					break;
 
-                case hw_rule_state_wait_final_release: //7
+          case hw_rule_state_wait_final_release: //7
                     if ((r->enableSwitchId == 0) || !switch_active) {
-                        r->state = hw_rule_state_enabled;
+                        if (r->type == hw_rule_enable)
+                            r->state = hw_rule_state_clear;
+                        else
+                          r->state = hw_rule_state_enabled;
                     }
-                    break;
+              break;
 
                 case hw_rule_state_clear:
                     // disable the coil
