@@ -77,7 +77,14 @@ void Comm::tick(unsigned long count) {
 	Serial.print(F("TCK:"));
 	Serial.println(count);	
 }
-	
+
+
+void Comm::ackFrame(const unsigned int nb, const boolean result) {
+	Serial.print(F("ACK:"));
+	Serial.println(result ? F("OK;"):F("ko;"));
+	Serial.println(nb);
+}
+
 		
 void Comm::debug(String message) {
   Serial.print(F("DBG:"));

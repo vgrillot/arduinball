@@ -31,6 +31,7 @@ boolean Protocol::run() {
     int coilPin;
     int disableSwitchId;
     unsigned int duration;
+    unsigned int frame;
     int i = 0;
     boolean result;
     result = false;
@@ -39,56 +40,65 @@ boolean Protocol::run() {
         this->__comm->debug("PROTOCOL:" + this->__input);
         
         if (this->getNextWord()) {
-            if (this->__nextWord == "RC") {
-                // RUL CLR COIL SW
-                if (this->getNextWord()) {
-                    coilPin = this->__nextWord.toInt();
-                if (this->getNextWord()) {
-                    enableSwitchId = this->__nextWord.toInt();
-                result = this->__rules->clearRule(coilPin, enableSwitchId);
-                }}
-            }            
-            else if (this->__nextWord == "RA") {
-                // RUL ADD TYPE SW COIL SW DURATION
-                if (this->getNextWord()) {
-                    type = (HwRuleType)(this->__nextWord.toInt());
-                if (this->getNextWord()) {
-                    coilPin = this->__nextWord.toInt();
-                if (this->getNextWord()) {
-                    enableSwitchId = this->__nextWord.toInt();
-                if (this->getNextWord()) {
-                    disableSwitchId = this->__nextWord.toInt();
-                if (this->getNextWord()) {
-                    duration = this->__nextWord.toInt();
-                result = this->__rules->addHwRule(type, enableSwitchId, coilPin, disableSwitchId, duration);
-                }}}}}
-            }        
-            else if (this->__nextWord == "DP") {
-                // DRV PUL COIL DURATION
-                if (this->getNextWord()) {
-                    coilPin = this->__nextWord.toInt();
-                if (this->getNextWord()) {
-                    duration = this->__nextWord.toInt();
-                result = this->__rules->addPulse(coilPin, duration);
-                }}
-            }
-            else if (this->__nextWord == "DE") {
-                // DRV ENB
-                if (this->getNextWord()) {
-                    coilPin = this->__nextWord.toInt();
-                result = this->__rules->addEnable(coilPin);
+            frame = this->__nextWord.toInt();
+            if (this->getNextWord()) {
+                if (this->__nextWord == "RC") {
+                    // RUL CLR COIL SW
+                    if (this->getNextWord()) {
+                        coilPin = this->__nextWord.toInt();
+                    if (this->getNextWord()) {
+                        enableSwitchId = this->__nextWord.toInt();
+                    result = this->__rules->clearRule(coilPin, enableSwitchId);
+                    }}
                 }
-            }
-            else if (this->__nextWord == "DD") {
-                // DRV DIS
-                if (this->getNextWord()) {
-                    coilPin = this->__nextWord.toInt();
-                result = this->__rules->addDisable(coilPin);
+                else if (this->__nextWord == "RA") {
+                    // RUL ADD TYPE SW COIL SW DURATION
+                    if (this->getNextWord()) {
+                        type = (HwRuleType)(this->__nextWord.toInt());
+                    if (this->getNextWord()) {
+                        coilPin = this->__nextWord.toInt();
+                    if (this->getNextWord()) {
+                        enableSwitchId = this->__nextWord.toInt();
+                    if (this->getNextWord()) {
+                        disableSwitchId = this->__nextWord.toInt();
+                    if (this->getNextWord()) {
+                        duration = this->__nextWord.toInt();
+                    result = this->__rules->addHwRule(type, enableSwitchId, coilPin, disableSwitchId, duration);
+                    }}}}}
                 }
+                else if (this->__nextWord == "DP") {
+                    // DRV PUL COIL DURATION
+                    if (this->getNextWord()) {
+                        coilPin = this->__nextWord.toInt();
+                    if (this->getNextWord()) {
+                        duration = this->__nextWord.toInt();
+                    result = this->__rules->addPulse(coilPin, duration);
+                    }}
+                }
+                else if (this->__nextWord == "DE") {
+                    // DRV ENB
+                    if (this->getNextWord()) {
+                        coilPin = this->__nextWord.toInt();
+                    result = this->__rules->addEnable(coilPin);
+                    }
+                }
+                else if (this->__nextWord == "DD") {
+                    // DRV DIS
+                    if (this->getNextWord()) {
+                        coilPin = this->__nextWord.toInt();
+                    result = this->__rules->addDisable(coilPin);
+                    }
+                }
+                else
+                    this->__comm->debug("Unknown command " + this->__nextWord);
+                // Send ACK and result
+                this->__comm->ackFrame(frame, result);
             }
             else
-                this->__comm->debug("Unknown command " + this->__nextWord);
+                this->__comm->debug("Missing command");
         }
+        else
+            this->__comm->debug("Missing frame nb");
         this->__input = "";  //clean unread buffer...
         this->__nextWord = "";
          if (!result) 
