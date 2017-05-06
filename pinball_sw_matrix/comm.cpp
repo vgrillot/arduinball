@@ -81,8 +81,8 @@ void Comm::tick(unsigned long count) {
 
 void Comm::ackFrame(const unsigned int nb, const boolean result) {
 	Serial.print(F("ACK:"));
-	Serial.println(result ? F("OK;"):F("ko;"));
-	Serial.println(nb);
+  Serial.print(nb);
+	Serial.println(result ? F(";OK"):F(";ko"));
 }
 
 		
