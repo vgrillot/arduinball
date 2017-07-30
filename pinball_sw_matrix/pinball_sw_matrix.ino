@@ -20,7 +20,7 @@ const unsigned long period_interval = 5000;
 const byte COLS = 8; // in
 const byte ROWS  = 5; // out
 byte colPins[COLS] = {23, 25, 27, 29, 31, 33, 35, 37}; // in
-byte rowPins[ROWS] = {39, 41, 43, 45, 47}; // outjj
+byte rowPins[ROWS] = {39, 41, 43, 45, 47}; // outj
 
 const byte LINEAR = 4;
 byte linearPins[LINEAR] = {49, 51, 48, 50};
@@ -36,7 +36,6 @@ const byte pin_right_slingshot_coil		= 28; //4-violet
 const byte pin_left_slingshot_coil		= 44; //5-violet 
 const byte pin_gate_coil				= 34; //6-red //ok
 
-
 const byte pin_left_flip_coil 			= 40; // 1-violet //ok
 const byte pin_right_flip_coil 			= 38; // 2-violet //bad
 
@@ -44,6 +43,8 @@ const byte pin_drop_target_reset_coil 	= 36; // 3-orange
 const byte pin_saucer_coil 				= 26; // 4-orange 
 const byte pin_out_hole					= 42; // 5-orange
 
+boolean fake_rules_done = false;
+unsigned long time_before_fake_rules = 0;
 
 SwMatrix *matrix = 0;
 SwLinear *linear = 0;
@@ -62,6 +63,8 @@ void setup() {
   period_count = 0;
   pinMode(LED_BUILTIN, OUTPUT);
 
+  time_before_fake_rules = millis() + 60000;
+  
   comm = new Comm(true);
   comm->debug("Init...");
 
@@ -83,32 +86,6 @@ void setup() {
   linear->init(&baseId);
 
   protocol = new Protocol(comm, rules);
-
-/*** no momre hardcoded rules ***
-  // add some hardcoded rules for test purposes
-  
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 31, pin_right_slingshot_coil, 0, 50); //ok
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 32, pin_left_slingshot_coil, 0, 50); //ok
-
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 39, pin_right_bumber_coil, 0, 50); //ok
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 40, pin_left_bumper_coil, 0, 50); //ok
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 33, pin_bottom_bumper_coil, 0, 50); //ok
-  
-  // flip switch are not connected to matrix sw....
-  
-  rules-
-  >addHwRule(hw_rule_pulse_on_hit_and_release_rule, 101, pin_left_flip_coil, 0, 10); // left flip
-  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 102, pin_right_flip_coil, 0, 10); // right flip
-  
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 23, pin_drop_target_reset_coil, 0, 50); 
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 22, pin_saucer_coil, 0, 50); //center target
-  rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 26, pin_gate_coil, 0, 50); //star 5
-  rules->addHwRule(hw_rule_pulse_on_hit_rule, 103, pin_out_hole, 0, 50); //real coin button
-
-// pin_drop_target_reset_coil nop
-
-  comm->debug("rules done!");    
-  ***/
 }
 
 
@@ -132,6 +109,38 @@ void refresh_led() {
 }
 
 
+void fake_rules_init() {
+    // add some hardcoded rules for test purposes at arduino start
+    fake_rules_done = true;
+    time_before_fake_rules = 0; // disable the timer 
+    
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 31, pin_right_slingshot_coil, 0, 50); //ok
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 32, pin_left_slingshot_coil, 0, 50); //ok
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 39, pin_right_bumber_coil, 0, 50); //ok
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 40, pin_left_bumper_coil, 0, 50); //ok
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 33, pin_bottom_bumper_coil, 0, 50); //ok
+    
+    rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 101, pin_left_flip_coil, 0, 10); // left flip
+    rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 102, pin_right_flip_coil, 0, 10); // right flip
+    
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 23, pin_drop_target_reset_coil, 0, 50); 
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 22, pin_saucer_coil, 0, 50); //center target
+    rules->addHwRule(hw_rule_pulse_on_hit_and_release_rule, 26, pin_gate_coil, 0, 50); //star 5
+    rules->addHwRule(hw_rule_pulse_on_hit_rule, 103, pin_out_hole, 0, 50); //real coin button
+    comm->debug("rules done!");      
+}
+
+
+void cancel_fake_rules() {
+    // Clear previous fake rules installed
+    time_before_fake_rules = 0; // disable the fake timer
+    if (fake_rules_done) {
+        // rules have been setted, need to clear all
+        rules->clearAllRules(); 
+    }
+}
+
+
 void loop() {
   unsigned long t;
   t = millis();
@@ -140,7 +149,9 @@ void loop() {
   if (rules->runAll(t))
     updated();
 
-  comm->read();
+  if (comm->read()) {
+    cancel_fake_rules();
+  }
   protocol->run();
 
   period_count++;
@@ -149,8 +160,15 @@ void loop() {
     period_count = period_count * 1000 / period_interval;
     comm->tick(period_count);
     period_count = 0;
+
+    // timer to set fake rules
+    if ((time_before_fake_rules > 0) && (t > time_before_fake_rules) && (!fake_rules_done))
+    {
+      fake_rules_init();
+    }
   }
   refresh_led();  
+
 }
 
 
