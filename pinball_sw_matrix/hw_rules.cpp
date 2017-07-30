@@ -134,17 +134,23 @@ boolean HwRules::existsSwitch(byte swId) {
  * Loop over all inputs and read them
  * !!170223:VG:Creation
  */
-boolean HwRules::readAll() {
+boolean HwRules::readAll(boolean force_update) {
 	SwCustom *inp;
 	boolean result;
 	result = false;
 	for (byte i = 0; i < this->__inputCount; i++)
 	{
 		inp = (this->__inputs[i]);
-		result = inp->read() or result;
+    if (force_update)    
+        result = inp->forceUpdate() or result;
+    else
+        result = inp->read() or result;
 	}
 	return result;
 }	
+
+  
+
 
 
 /*
@@ -157,7 +163,7 @@ boolean HwRules::runAll(unsigned int time) {
   this->_time = time;
   
   // real all switches
-  boolean result = this->readAll();
+  boolean result = this->readAll(false);
   
   // parse all rules
   HwRule *r;
@@ -315,7 +321,8 @@ boolean HwRules::addEnable(int coilPin){
 /*
  * addDisable()
  * Stop a coil activated by addEnable()
- * !!150418:VG:Creation
+ * !!170418:VG:Creation
+ * !!170514:VG:Return true even if nothing to disable, as is a no consequence error
  */
 boolean HwRules::addDisable(int coilPin){
   //search the enabled rule
@@ -327,7 +334,7 @@ boolean HwRules::addDisable(int coilPin){
       return true;
     }    
   }    
-  this->__comm->debug("No enabled coil found to disable");
+  this->__comm->warning("No enabled coil found to disable");
   return false; // rule not found !
 }
 
@@ -335,6 +342,7 @@ boolean HwRules::addDisable(int coilPin){
 /*
  * clearRule()
  * search a matching rule and disable it
+ * !!170514:VG:Add a warning and return true even if nothing to disable, as is a no consequence error
  */
 boolean HwRules::clearRule(int coilPin, int enableSwitchId) {
   //search the enabled rule
@@ -346,7 +354,45 @@ boolean HwRules::clearRule(int coilPin, int enableSwitchId) {
       return true;
     }    
   }      
-  return false; // rule not found
+  this->__comm->warning("No enabled coil found to disable");
+  return true; // rule not found
+}
+
+
+/*
+ * clearAllRules()
+ * disable all rules
+ * !!170729:VG:Creation
+ */
+void HwRules::clearAllRules() {
+  //search the enabled rule
+  HwRule *r;
+  for (byte i=0; i<MAX_HW_RULES; i++) {
+    r = &(this->__rules[i]);
+      r->state = hw_rule_state_clear;
+  }      
+}
+
+
+/*
+ * initPlatform()
+ * when MPF platform is ran
+ * !!170723:VG:Creation
+ */
+boolean HwRules::initPlatform() {
+  // force to update all inputs and send to master platform
+  this->readAll(true);
+}
+
+
+/*
+ * haltPlatform()
+ * when MPF platform is going to quit
+ * !!170723:VG:Creation
+ */
+boolean HwRules::haltPlatform() {
+  this->stopAll();
+  return true;  
 }
 
 

@@ -47,12 +47,16 @@ class HwRules
     boolean addDisable(int coilPin);
 
     boolean clearRule(int coilPin, int enableSwitchId);
+    void  clearAllRules();
 
-
-	boolean readAll();
+    boolean readAll(boolean force_update);
 	
     boolean runAll(unsigned int time);
     void stopAll();
+    
+    boolean initPlatform();
+    boolean haltPlatform();
+    
 };
 
 #endif
