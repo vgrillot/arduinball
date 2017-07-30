@@ -2,7 +2,7 @@
  * hw_rule
  * 
  * !!170203:VG:Creation
- * 
+ * !!170624:VG:Add hw_rule_wait_and_pulse
  */
 
 #ifndef hw_rule_h
@@ -23,7 +23,8 @@ enum HwRuleType: byte {
   hw_rule_pulse_on_hit_and_enable_and_release_rule = 3,
   hw_rule_pulse_on_hit_and_enable_and_release_and_disable_rule = 4,
   hw_rule_enable = 5,
-  hw_rule_pulse = 6
+  hw_rule_pulse = 6,
+  hw_rule_wait_and_pulse = 7
 };
 
 
