@@ -37,7 +37,7 @@ boolean Protocol::run() {
     result = false;
     if (this->__comm->readLn()) {
         this->__input = this->__comm->input;
-        this->__comm->debug("PROTOCOL:" + this->__input);
+        this->__comm->debug("PROTOCOL:" + this->__input + ".");
         
         if (this->getNextWord()) {
             frame = this->__nextWord.toInt();
@@ -88,6 +88,14 @@ boolean Protocol::run() {
                         coilPin = this->__nextWord.toInt();
                     result = this->__rules->addDisable(coilPin);
                     }
+                }
+                else if (this->__nextWord == "MI") {
+                    // PLATFORM INIT
+                    result = this->__rules->initPlatform();
+                }
+                else if (this->__nextWord == "MH") {
+                    // PLATFORM HALT
+                    result = this->__rules->haltPlatform();
                 }
                 else
                     this->__comm->debug("Unknown command " + this->__nextWord);
