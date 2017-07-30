@@ -30,13 +30,13 @@ class Comm
 		String input;
 		Comm(const boolean waitSerial);
 
-		void read();
+		boolean read();
 
 		boolean readLn();
 		
 
-        void debug(String message);
-        void info(String message);
+    void debug(String message);
+    void info(String message);
 		void warning(String warning);
 		void error(String error);
 

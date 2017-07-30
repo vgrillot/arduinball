@@ -3,6 +3,7 @@
  * 
  * !!170203:VG:Creation
  * !!170505:VG:manage duplicate messages
+ * !!170611:VG:Remove duplicate check to let retry for some commands
  * 
  */
 
@@ -33,18 +34,21 @@ void Comm::readReset() {
  * Poll the serial port
  * '*' is a char used to fill the buffer (f*ckin debug!)
  * '!' is a secondary separator
- * 
+ * !!170716:VG:Don't trig procotol on a new empty frame
+ * !!170729:VG:return true if a new trame is complete
  */
-void Comm::read() {
+boolean Comm::read() {
     boolean do_wait = false;
     if (this->__ready)
-        return;
-	while (Serial.available() > 0) {
+        return false;
+    while (Serial.available() > 0) {
         do_wait = true;
 		char in = (char) Serial.read();
 		if ((in == '\n') || (in == '\r') || (in == '!')) {
-			this->__ready = true;
-			break;
+        if (this->__input.length() > 0) {
+			      this->__ready = true;
+            return true;			    
+        }
 		}
         else
             if (in != '*')
@@ -52,19 +56,22 @@ void Comm::read() {
 	}
     if (do_wait)
         delay(5);
+  return false;        
 }
 
 
 boolean Comm::readLn() {
 	if (this->__ready) {
+/*
 	    if (this->__input == this->__previous_input) {
 	        // duplicated message, skip it...
-    		this->readReset();
+          this->warning("READLN:DUPLICATE:" + this->__input);
+          this->readReset();
 	        return false;
 	    }
+*/	
 	    this->__previous_input = this->__input;
 		this->input = this->__input;
-        //this->debug("READLN:" + this->__input);
 		this->readReset();
 		return true;
 	}
