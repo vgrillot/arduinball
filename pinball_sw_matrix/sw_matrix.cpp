@@ -122,7 +122,7 @@ boolean SwMatrix::read() {
       this->_bounce[id] = b;
 
       //if (this->_sw_id[id] != 6) {
-        if (this->_sw_prev_state[id] != this->sw_state[id]) {
+        if ((this->_sw_prev_state[id] != this->sw_state[id]) || (this->_force_update)) {
             // save previous state
             this->_sw_prev_state[id] = sw_state[id];
             this->_comm->writeSwUpdate(this->_sw_id[id], this->sw_state[id]);            

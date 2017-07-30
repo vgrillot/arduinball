@@ -24,6 +24,7 @@ class SwCustom
     byte *_sw_id = 0; 
     byte *_sw_prev_state = 0; 
     byte *_bounce = 0;
+    boolean _force_update = false;
         
   public:
     byte *sw_state = 0; //[ROWS][COLS];
@@ -33,6 +34,7 @@ class SwCustom
     virtual boolean read();
     virtual boolean isSwitchActive(byte swId);	
     boolean acceptSwId(byte swId);
+    boolean forceUpdate();
 };
 
 

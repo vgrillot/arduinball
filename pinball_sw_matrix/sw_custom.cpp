@@ -13,6 +13,7 @@
  */
 void SwCustom::setComm(Comm *comm) {
 	this->_comm = comm;
+  this->_force_update = false;
 }
 
 /*
@@ -25,5 +26,19 @@ void SwCustom::setComm(Comm *comm) {
  */
 boolean SwCustom::acceptSwId(byte swId) {
 	return ((swId >= this->_base) && (swId < this->_base + this->_count));
+}
+
+
+/*
+ * forceUpdate()
+ * read all inputs and send update to master
+ * 
+ * !!170723:VG:Creation
+ * 
+ */
+boolean SwCustom::forceUpdate() {
+    this->_force_update = true;
+    return this->read();
+    this->_force_update = false;
 }
 

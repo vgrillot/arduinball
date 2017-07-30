@@ -83,7 +83,7 @@ boolean SwLinear::read() {
         }
         this->_bounce[i] = bounce;
       }
-      if (this->_sw_prev_state[i] != this->sw_state[i]) 
+      if ((this->_sw_prev_state[i] != this->sw_state[i]) || (this->_force_update))
 	    {
         // save previous state
         this->_sw_prev_state[i] = sw_state[i];
