@@ -182,6 +182,47 @@ boolean HwRules::runAll(unsigned int time) {
  * Run the selected rule
  * !!170205:VG:Creation
  * !!170214:VG:Manage a state machine
+ 
+ 
+ plantuml state diagram:
+ 
+@startuml 
+[*] --> init
+
+init --> [*]
+
+enabled --> activated : !sw || sw active \n ON
+
+activated --> start_duration : pulse | pulse_on_hit_rule
+
+activated --> wait_release : pulse_on_hit\n_and_enable\n_and_release_rule
+activated --> wait_release : pulse_on_hit_\nand_enable_\nand_release_\nand_disable_rule
+activated --> wait_release : pulse_on_hit\n_and_release_rule
+
+activated --> activated : enable
+
+
+activated --> release : default
+
+
+wait_release --> release : sw & !sw active
+
+
+start_duration --> wait_duration 
+
+wait_duration --> clear : timeout  & pulse
+wait_duration --> release : timeout & !pulse
+
+release --> final_release : OFF
+
+final_release --> clear : !sw | !sw active  && enable
+final_release --> enabled : !sw | !sw active  && !enable
+
+clear --> disabled : +ndef \n OFF
+
+disabled --> disabled
+
+@enduml
  */
 void HwRules::runRule(HwRule *r) {
 	byte old_state;
