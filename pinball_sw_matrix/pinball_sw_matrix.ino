@@ -63,7 +63,7 @@ void setup() {
   period_count = 0;
   pinMode(LED_BUILTIN, OUTPUT);
 
-  time_before_fake_rules = millis() + 60000;
+  time_before_fake_rules = millis() + 10000;
   
   comm = new Comm(true);
   comm->debug("Init...");
