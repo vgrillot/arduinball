@@ -53,6 +53,7 @@ class HwRules
 	
     boolean runAll(unsigned int time);
     void stopAll();
+    void debugAll();
     
     boolean initPlatform();
     boolean haltPlatform();

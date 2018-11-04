@@ -161,6 +161,9 @@ void loop() {
     comm->tick(period_count);
     period_count = 0;
 
+    //!!181104:VG:Add verbose debug
+    rules->debugAll();
+
     // timer to set fake rules
     if ((time_before_fake_rules > 0) && (t > time_before_fake_rules) && (!fake_rules_done))
     {

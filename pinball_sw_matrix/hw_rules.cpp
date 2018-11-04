@@ -236,8 +236,8 @@ void HwRules::runRule(HwRule *r) {
 		if (r->state != hw_rule_state_disabled) {
 		
 			// read the main switch state
-            if (r->enableSwitchId != 0)
-                switch_active = this->isSwitchActive(r->enableSwitchId);
+      if (r->enableSwitchId != 0)
+          switch_active = this->isSwitchActive(r->enableSwitchId);
 
 
 			switch(r->state) {
@@ -296,9 +296,9 @@ void HwRules::runRule(HwRule *r) {
 				
 				case hw_rule_state_wait_duration: //5
 					if (this->_time > r->timeout) {
-                        if (r->type == hw_rule_pulse)
-                            r->state = hw_rule_state_clear;
-                        else
+            if (r->type == hw_rule_pulse)
+                r->state = hw_rule_state_clear;
+            else
 						    r->state = hw_rule_state_release;
 					}					
 					break;
@@ -306,25 +306,25 @@ void HwRules::runRule(HwRule *r) {
 				case hw_rule_state_release : //6
 					// disable the coil
 					digitalWrite(r->coilPin, LOW);
-					r->state = hw_rule_state_wait_final_release; //hw_rule_state_enabled;
+					r->state = hw_rule_state_wait_final_release; 
 					r->timeout = 0;
 					break;
 
-          case hw_rule_state_wait_final_release: //7
-                    if ((r->enableSwitchId == 0) || !switch_active) {
-                        if (r->type == hw_rule_enable)
-                            r->state = hw_rule_state_clear;
-                        else
-                          r->state = hw_rule_state_enabled;
-                    }
-              break;
+        case hw_rule_state_wait_final_release: //7
+            if ((r->enableSwitchId == 0) || !switch_active) {
+                if (r->type == hw_rule_enable)
+                    r->state = hw_rule_state_clear;
+                else
+                  r->state = hw_rule_state_enabled;
+            }
+            break;
 
-                case hw_rule_state_clear:
-                    // disable the coil
-                    digitalWrite(r->coilPin, LOW);
-                    r->type = hw_rule_ndef;
-                    r->state = hw_rule_state_disabled; // should not be used
-                    break;
+        case hw_rule_state_clear:
+            // disable the coil
+            digitalWrite(r->coilPin, LOW);
+            r->type = hw_rule_ndef;
+            r->state = hw_rule_state_disabled; // should not be used
+            break;
 
 			} //state?
 		} //!disable
@@ -349,6 +349,29 @@ void HwRules::stopAll() {
     r = &(this->__rules[i]);
     if ((r->type != hw_rule_ndef) && (r->state != hw_rule_state_disabled)) {
 		  r->state = hw_rule_state_release;
+    }    
+  }  
+}
+
+
+
+/*
+ * debugAll()
+ * Verbose output of all rules
+ * !!181104:VG:Creation
+ */
+void HwRules::debugAll() {
+  HwRule *r;
+  for (byte i=0; i<MAX_HW_RULES; i++) {
+    r = &(this->__rules[i]);
+    if ((r->type != hw_rule_ndef) && (r->state != hw_rule_state_disabled)) {
+      this->__comm->debug(String(this->_time) + ":" + String(r->id)   
+                                              + ":TY" + String(r->type)
+                                              + ":ST" + String(r->state)
+                                              + ":C" + String(r->coilPin) 
+                                              + ":TO" + String(r->timeout) 
+                                              + ":DU" + String(r->duration)    
+                                              );
     }    
   }  
 }
