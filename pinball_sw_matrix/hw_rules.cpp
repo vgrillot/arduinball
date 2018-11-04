@@ -176,8 +176,9 @@ void HwRules::checkWatchdog(boolean changed) {
  * RunAll()
  * Loop over all the rules and run them
  * !!170205:VG:Creation
+ * !!181104:Vg:FIX:time overflow
  */
-boolean HwRules::runAll(unsigned int time) {
+boolean HwRules::runAll(unsigned long time) {
   // save the current time
   this->_time = time;
   
@@ -393,7 +394,8 @@ void HwRules::debugAll() {
                                               + ":DU" + String(r->duration)    
                                               );
     }    
-  }  
+  }
+  this->__comm->debug("T:" + String(this->_time) + "WD:" + String(this->__watchdogTimeOut));  
 }
 
 

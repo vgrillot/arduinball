@@ -4,6 +4,7 @@
  * !!170203:VG:Creation
  * !!181104:VG:Add verbose debug output
  * !!181104:VG:Add global watchdog
+ * !!181104:VG:FIX:timeout overflow (int vs long)
  * 
  */
 
@@ -30,8 +31,8 @@ class HwRules
     HwRule __rules[MAX_HW_RULES];
     SwCustom * __inputs[MAX_SW_INPUT];
     byte __inputCount = 0;
-    unsigned int _time;
-    unsigned int __watchdogTimeOut;
+    unsigned long _time;
+    unsigned long __watchdogTimeOut;
 
     boolean isSwitchActive(byte swId);
     boolean existsSwitch(byte swId);
@@ -55,7 +56,7 @@ class HwRules
 
     boolean readAll(boolean force_update);
 	
-    boolean runAll(unsigned int time);
+    boolean runAll(unsigned long time);
     void stopAll();
 
     void debugAll();
