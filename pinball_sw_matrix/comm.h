@@ -27,26 +27,26 @@ class Comm
 		void write(String s);
 
 	public:
-		String input;
-		Comm(const boolean waitSerial);
+        String input;
+        Comm(const boolean waitSerial);
 
-		boolean read();
+        boolean read();
 
-		boolean readLn();
-		
+        boolean readLn();
 
-    void debug(String message);
-    void info(String message);
-		void warning(String warning);
-		void error(String error);
 
-		void tick(unsigned long count);
+        void debug(String message);
+        void info(String message);
+        void warning(String warning);
+        void error(String error);
 
-		void ackFrame(const unsigned int nb, const boolean result);
+        void tick(unsigned long count);
 
-		void writeSwBeginUpdate();
-		void writeSwUpdate(const int swId, const boolean active);
-		void writeSwEndUpdate();
+        void ackFrame(const unsigned int nb, const boolean result);
+
+        void writeSwBeginUpdate();
+        void writeSwUpdate(const int swId, const boolean active);
+        void writeSwEndUpdate();
 };
 
 

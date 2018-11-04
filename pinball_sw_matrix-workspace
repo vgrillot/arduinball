@@ -1,0 +1,11 @@
+<NotepadPlus>
+    <Project name="pinball sw matrix">
+        <File name="pinball_sw_matrix\hw_rule.cpp" />
+        <File name="pinball_sw_matrix\hw_rule.h" />
+        <File name="pinball_sw_matrix\hw_rules.cpp" />
+        <File name="pinball_sw_matrix\hw_rules.h" />
+        <File name="pinball_sw_matrix\pinball_sw_matrix.ino" />
+        <File name="pinball_sw_matrix\sw_matrix.cpp" />
+        <File name="pinball_sw_matrix\sw_matrix.h" />
+    </Project>
+</NotepadPlus>

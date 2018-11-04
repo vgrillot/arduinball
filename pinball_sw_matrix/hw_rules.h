@@ -2,8 +2,11 @@
  * hw_rules
  * 
  * !!170203:VG:Creation
+ * !!181104:VG:Add verbose debug output
+ * !!181104:VG:Add global watchdog
  * 
  */
+
 
 #ifndef hw_rules_h
 #define hw_rules_h
@@ -25,9 +28,10 @@ class HwRules
   private:
     Comm *__comm;
     HwRule __rules[MAX_HW_RULES];
-  	SwCustom * __inputs[MAX_SW_INPUT];
-	  byte __inputCount = 0;
+    SwCustom * __inputs[MAX_SW_INPUT];
+    byte __inputCount = 0;
     unsigned int _time;
+    unsigned int __watchdogTimeOut;
 
     boolean isSwitchActive(byte swId);
     boolean existsSwitch(byte swId);
@@ -53,7 +57,9 @@ class HwRules
 	
     boolean runAll(unsigned int time);
     void stopAll();
+
     void debugAll();
+    void checkWatchdog(boolean changed);
     
     boolean initPlatform();
     boolean haltPlatform();

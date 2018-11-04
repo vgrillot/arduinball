@@ -151,6 +151,25 @@ boolean HwRules::readAll(boolean force_update) {
 
   
 
+/*
+ * checkWatchdog()
+ * if watchdog timeout is triggered, then stop all running rules
+ * !!181104:VG:Creation
+ */
+void HwRules::checkWatchdog(boolean changed) {
+  if (changed)
+  {
+    this->__watchdogTimeOut = this->_time + 30000;
+  }
+  else
+  {
+    if ((this->__watchdogTimeOut != 0) && (this->_time > this->__watchdogTimeOut)) {
+      this->stopAll();
+      this->__comm->error("watchdog timeout!");
+      this->__watchdogTimeOut = 0;
+    }
+  }
+}
 
 
 /*
@@ -164,6 +183,7 @@ boolean HwRules::runAll(unsigned int time) {
   
   // real all switches
   boolean result = this->readAll(false);
+  this->checkWatchdog(result);
   
   // parse all rules
   HwRule *r;
