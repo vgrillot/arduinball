@@ -182,6 +182,9 @@ boolean HwRules::runAll(unsigned int time) {
  * Run the selected rule
  * !!170205:VG:Creation
  * !!170214:VG:Manage a state machine
+ * !!171215:VG:Add plantuml diagram
+ *             http://sujoyu.github.io/plantuml-previewer/
+ *             http://plantuml.com/state-diagram
  
  
  plantuml state diagram:
