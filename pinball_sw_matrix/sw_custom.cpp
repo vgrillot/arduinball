@@ -37,6 +37,7 @@ boolean SwCustom::acceptSwId(byte swId) {
  * 
  */
 boolean SwCustom::forceUpdate() {
+    this->_comm->debug("Sw:forceUpdate id=" + String(this->_id));
     this->_force_update = true;
     return this->read();
     this->_force_update = false;
