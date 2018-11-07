@@ -34,12 +34,14 @@ boolean SwCustom::acceptSwId(byte swId) {
  * read all inputs and send update to master
  * 
  * !!170723:VG:Creation
+ * !!181107:VG:FIX: return was called before setting _force_update to false
  * 
  */
 boolean SwCustom::forceUpdate() {
-    this->_comm->debug("Sw:forceUpdate id=" + String(this->_id));
+    boolean result;
     this->_force_update = true;
-    return this->read();
+    result = this->read();
     this->_force_update = false;
+    return result;
 }
 
