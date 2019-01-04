@@ -65,7 +65,7 @@ void SwMatrix::init(byte *baseId) {
     for (r = 0; r < this->__rowCount; r++)
     {
       v = this->matrixToId(c, r);
-      this->_comm->debug(String(v));
+//      this->_comm->debug(String(v));
       this->_sw_id[v] = v + 1;
       (*baseId)++;
       this->_comm->debug(String(this->_sw_id[v]));
