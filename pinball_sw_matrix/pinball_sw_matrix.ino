@@ -136,7 +136,9 @@ void cancel_fake_rules() {
     time_before_fake_rules = 0; // disable the fake timer
     if (fake_rules_done) {
         // rules have been setted, need to clear all
-        rules->clearAllRules(); 
+        rules->clearAllRules();
+        //190104:VG:FIX:cancel was always called...
+        fake_rules_done = False
     }
 }
 
