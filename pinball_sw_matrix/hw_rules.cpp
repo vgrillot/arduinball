@@ -61,7 +61,7 @@ boolean HwRules::addHwRule(HwRuleType type, int enableSwitchId, int coilPin, int
       r->enableSwitchId = enableSwitchId;
       r->coilPin = coilPin;
       r->disableSwitchId = disableSwitchId;
-	    r->state = hw_rule_state_enabled;
+      r->state = hw_rule_state_enabled;
       r->timeout = 0;
       r->duration = duration;
       pinMode(r->coilPin, OUTPUT);
@@ -387,15 +387,15 @@ void HwRules::debugAll() {
     r = &(this->__rules[i]);
     if ((r->type != hw_rule_ndef) && (r->state != hw_rule_state_disabled)) {
       this->__comm->debug(String(this->_time) + ":" + String(r->id)   
-                                              + ":TY" + String(r->type)
-                                              + ":ST" + String(r->state)
-                                              + ":C" + String(r->coilPin) 
-                                              + ":TO" + String(r->timeout) 
-                                              + ":DU" + String(r->duration)    
+                                              + ":TY=" + String(r->type)
+                                              + ":ST=" + String(r->state)
+                                              + ":C=" + String(r->coilPin)
+                                              + ":TO=" + String(r->timeout)
+                                              + ":DU=" + String(r->duration)
                                               );
     }    
   }
-  this->__comm->debug("T:" + String(this->_time) + "WD:" + String(this->__watchdogTimeOut));  
+  this->__comm->debug("T:" + String(this->_time) + ":WD=" + String(this->__watchdogTimeOut));
 }
 
 
