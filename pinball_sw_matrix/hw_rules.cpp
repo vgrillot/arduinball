@@ -468,9 +468,11 @@ void HwRules::clearAllRules() {
  * when MPF platform is ran
  * !!170723:VG:Creation
  * !!181107:VG:FIX:Missing return value
+ * !!190104:VG:Force a clearAllRules()
  */
 boolean HwRules::initPlatform() {
   // force to update all inputs and send to master platform
+  this->clearAllRules();
   this->readAll(true);
   return true;
 }
